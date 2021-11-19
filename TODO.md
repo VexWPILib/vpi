@@ -1,0 +1,24 @@
+TODO
+
+- [ ] Build doxygen documentation
+- [X] Build as library
+- [X] Fix build to copy header files to the build directory
+- [X] Better instructions for how to include the library in a user's project
+- [ ] Address TODOs in code/comments
+- [ ] Test Mecanum/XDrive on a physical robot
+- [ ] Test DifferentialDriveChassisPID 
+- [X] Test GPS device
+- [ ] Test sensor fusion for odometry
+- [X] Replace the Squiggles motion profiler with the WPI one now that Eigen works
+- [X] Include a naive spline path follower
+- [ ] Include a more advanced path follower
+- [X] Test the motion profilers generators
+- [ ] Test the motion profilers follower physically
+- [X] Investigate including lvgl and building a customizable auton selector
+- [X] Link to lvgl
+- [X] Add auton selector based on lvgl
+- [X] Add auton selector demo program
+- [X] Add wheel diameter and wheel track tuning demo program
+- [ ] Add PID tuning demo program - IN PROGRESS
+- [ ] Demonstrate how one might feed data from a Vision Sensor to steer the robot
+- [ ] Port the Command-Based portion of WPILib
