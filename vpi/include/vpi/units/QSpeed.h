@@ -1,3 +1,7 @@
+// Copyright (c) VexWPIApi contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the VexWPIApi BSD license file in the root directory of this project.
+
 /*
  * This code is a modified version of Benjamin Jurke's work in 2015. You can read his blog post
  * here:

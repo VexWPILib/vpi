@@ -1,3 +1,7 @@
+// Copyright (c) VexWPIApi contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the VexWPIApi BSD license file in the root directory of this project.
+
 /*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
