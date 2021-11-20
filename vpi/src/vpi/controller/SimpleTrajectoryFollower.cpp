@@ -6,12 +6,13 @@
 
 namespace vpi {
 
-void SimpleTrajectoryFollower::FollowTrajectory(std::vector<Trajectory::State> states) {
+void SimpleTrajectoryFollower::FollowTrajectory(Trajectory t) {
+  std::vector<Trajectory::State> states = t.States();
   for(int i = 1; i < states.size(); ++i) {
     ChassisSpeeds cs;
     cs.vx = states[i].velocity;
     cs.omega = states[i].velocity * states[i].curvature;
-    m_chassis->DriveChassisSpeeds(cs);
+    m_chassis.DriveChassisSpeeds(cs);
     QTime timeToWait = states[i].t - states[i - 1].t;
     wait(timeToWait.convert(millisecond), msec);
   } 

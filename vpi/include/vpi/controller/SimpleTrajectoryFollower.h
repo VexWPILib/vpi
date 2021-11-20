@@ -15,15 +15,12 @@ namespace vpi {
    */
 class SimpleTrajectoryFollower {
   public:
-    SimpleTrajectoryFollower(DifferentialDriveChassis *chassis) :
+    SimpleTrajectoryFollower(DifferentialDriveChassis &chassis) :
         m_chassis(chassis) {}
 
-    void FollowTrajectory(std::vector<Trajectory::State> states);
-    void FollowTrajectory(std::initializer_list<Trajectory::State> states){
-      std::vector<Trajectory::State> vstates = states;
-      FollowTrajectory(vstates);
-    }
+    void FollowTrajectory(Trajectory t);
+
   protected:
-    DifferentialDriveChassis *m_chassis;
+    DifferentialDriveChassis &m_chassis;
 };
 } // vpi
