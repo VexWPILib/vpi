@@ -13,12 +13,12 @@ namespace vpi {
    */
 class SimpleWaypointFollower {
   public:
-    SimpleWaypointFollower(DifferentialDriveChassis *chassis) :
+    SimpleWaypointFollower(DifferentialDriveChassis &chassis) :
         m_chassis(chassis) {}
 
     void FollowTrajectory(std::vector<Pose2d> iwaypoints, QSpeed s);
     void FollowTrajectory(std::initializer_list<Pose2d> iwaypoints, QSpeed s);
   protected:
-    DifferentialDriveChassis *m_chassis;
+    DifferentialDriveChassis &m_chassis;
 };
 } // vpi

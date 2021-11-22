@@ -10,7 +10,7 @@ void SimpleWaypointFollower::FollowTrajectory(std::vector<Pose2d> iwaypoints,
                                                 QSpeed s) {
   for(auto wp : iwaypoints) {
     Point2d target(wp.X(), wp.Y());
-    m_chassis->DriveToPoint(target, s, true);
+    m_chassis.DriveToPoint(target, s, true);
   }
 }
 
@@ -18,7 +18,7 @@ void SimpleWaypointFollower::FollowTrajectory(std::initializer_list<Pose2d> iway
                                                 QSpeed s) {
   for(auto wp : iwaypoints) {
     Point2d target(wp.X(), wp.Y());
-    m_chassis->DriveToPoint(target, s, true);
+    m_chassis.DriveToPoint(target, s, true);
   }
 }
 

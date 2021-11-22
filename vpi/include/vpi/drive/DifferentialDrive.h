@@ -112,6 +112,21 @@ class DifferentialDrive : public RobotDriveBase {
   void ArcadeDrive(double xSpeed, double zRotation, bool squareInputs = true);
 
   /**
+   * Arcade drive inverse kinematics for differential drive platform.
+   *
+   * Note: Some drivers may prefer inverted rotation controls. This can be done
+   * by negating the value passed for rotation.
+   *
+   * @param xSpeed       The speed at which the robot should drive along the X
+   *                     axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation    The rotation rate of the robot around the Z axis
+   *                     [-1.0..1.0]. Clockwise is positive.
+   * @param squareInputs If set, decreases the input sensitivity at low speeds.
+   */
+  static WheelSpeeds ArcadeDriveIK(double xSpeed, double zRotation,
+                                   bool squareInputs = true);
+
+  /**
    * Tank drive method for differential drive platform.
    *
    * @param leftSpeed     The robot left side's speed along the X axis
@@ -121,6 +136,18 @@ class DifferentialDrive : public RobotDriveBase {
    * @param squareInputs If set, decreases the input sensitivity at low speeds.
    */
   void TankDrive(double leftSpeed, double rightSpeed, bool squareInputs = true);
+
+  /**
+   * Tank drive inverse kinematics for differential drive platform.
+   *
+   * @param leftSpeed    The robot left side's speed along the X axis
+   *                     [-1.0..1.0]. Forward is positive.
+   * @param rightSpeed   The robot right side's speed along the X axis
+   *                     [-1.0..1.0]. Forward is positive.
+   * @param squareInputs If set, decreases the input sensitivity at low speeds.
+   */
+  static WheelSpeeds TankDriveIK(double leftSpeed, double rightSpeed,
+                                 bool squareInputs = true);
 
   /**
    * Directly provide the wheel speeds
@@ -165,33 +192,6 @@ class DifferentialDrive : public RobotDriveBase {
   bool IsMoving() override;
 
  protected:
-  /**
-   * Arcade drive inverse kinematics for differential drive platform.
-   *
-   * Note: Some drivers may prefer inverted rotation controls. This can be done
-   * by negating the value passed for rotation.
-   *
-   * @param xSpeed       The speed at which the robot should drive along the X
-   *                     axis [-1.0..1.0]. Forward is positive.
-   * @param zRotation    The rotation rate of the robot around the Z axis
-   *                     [-1.0..1.0]. Clockwise is positive.
-   * @param squareInputs If set, decreases the input sensitivity at low speeds.
-   */
-  static WheelSpeeds ArcadeDriveIK(double xSpeed, double zRotation,
-                                   bool squareInputs = true);
-
-  /**
-   * Tank drive inverse kinematics for differential drive platform.
-   *
-   * @param leftSpeed    The robot left side's speed along the X axis
-   *                     [-1.0..1.0]. Forward is positive.
-   * @param rightSpeed   The robot right side's speed along the X axis
-   *                     [-1.0..1.0]. Forward is positive.
-   * @param squareInputs If set, decreases the input sensitivity at low speeds.
-   */
-  static WheelSpeeds TankDriveIK(double leftSpeed, double rightSpeed,
-                                 bool squareInputs = true);
-
   vex::motor_group* m_leftMotor;
   vex::motor_group* m_rightMotor;
   DifferentialDriveKinematics m_kinematics;
