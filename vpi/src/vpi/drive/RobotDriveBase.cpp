@@ -14,7 +14,8 @@ namespace vpi {
     Point2d p = Point2d(currentPose.X(), currentPose.Y());
     // return pthis.computeDistanceToPoint(pend);
     QAngle turnAmount = UnitUtils::constrainTo180(p.computeAngleToPoint(target));
-    turnAmount = UnitUtils::constrainTo180(turnAmount - currentPose.Rotation().ToAngle());
+    turnAmount = UnitUtils::constrainTo180(turnAmount - 
+                                          currentPose.Rotation().ToAngle());
     QLength wheelLinearDistance = turnAmount.convert(radian) * m_wheelTrack / 2.0;
     return computeMotorRotationsForDrive(wheelLinearDistance);
   }

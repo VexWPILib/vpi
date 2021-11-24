@@ -51,8 +51,6 @@ namespace vpi {
  */
 class SplineParameterizer {
  public:
-  using PoseWithCurvature = std::pair<Pose2d, QCurvature>;
-
   /**
    * Parameterizes the spline. This method breaks up the spline into various
    * arcs until their dx, dy, and dtheta are within specific tolerances.
@@ -67,10 +65,10 @@ class SplineParameterizer {
    * the spline.
    */
   template <int Dim>
-  static std::vector<PoseWithCurvature> Parameterize(const Spline<Dim>& spline,
+  static std::vector<Pose2dWithCurvature> Parameterize(const Spline<Dim>& spline,
                                                      double t0 = 0.0,
                                                      double t1 = 1.0) {
-    std::vector<PoseWithCurvature> splinePoints;
+    std::vector<Pose2dWithCurvature> splinePoints;
 
     // The parameterization does not add the initial point. Let's add that.
     splinePoints.push_back(spline.GetPoint(t0));
@@ -81,8 +79,8 @@ class SplineParameterizer {
     stack.emplace(StackContents{t0, t1});
 
     StackContents current;
-    PoseWithCurvature start;
-    PoseWithCurvature end;
+    Pose2dWithCurvature start;
+    Pose2dWithCurvature end;
     int iterations = 0;
 
     while (!stack.empty()) {
@@ -91,7 +89,7 @@ class SplineParameterizer {
       start = spline.GetPoint(current.t0);
       end = spline.GetPoint(current.t1);
 
-      const auto twist = start.first.Log(end.first);
+      const auto twist = start.pose.Log(end.pose);
 
       if (fabs(twist.dy.convert(meter)) > kMaxDy.convert(meter) ||
           fabs(twist.dx.convert(meter)) > kMaxDx.convert(meter) ||

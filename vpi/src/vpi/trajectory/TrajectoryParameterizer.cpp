@@ -35,7 +35,7 @@
 using namespace vpi;
 
 Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
-    const std::vector<PoseWithCurvature>& points,
+    const std::vector<Pose2dWithCurvature>& points,
     const std::vector<std::unique_ptr<TrajectoryConstraint>>& constraints,
     QSpeed startVelocity,
     QSpeed endVelocity,
@@ -58,8 +58,8 @@ Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
     constrainedState.pose = points[i];
 
     // Begin constraining based on predecessor
-    QLength ds = constrainedState.pose.first.Translation().Distance(
-        predecessor.pose.first.Translation());
+    QLength ds = constrainedState.pose.pose.Translation().Distance(
+        predecessor.pose.pose.Translation());
     constrainedState.distance = ds + predecessor.distance;
 
     // We may need to iterate to find the maximum end velocity and common
@@ -81,8 +81,8 @@ Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
       for (const auto& constraint : constraints) {
         constrainedState.maxVelocity = mps * fmin(
             constrainedState.maxVelocity.convert(mps),
-            constraint->MaxVelocity(constrainedState.pose.first,
-                                    constrainedState.pose.second,
+            constraint->MaxVelocity(constrainedState.pose.pose,
+                                    constrainedState.pose.curvature,
                                     constrainedState.maxVelocity).convert(mps));
       }
 
@@ -217,7 +217,7 @@ Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
     t += dt;
 
     states[i] = {t, reversed ? -v : v, reversed ? -accel : accel,
-                 state.pose.first, state.pose.second};
+                 state.pose.pose, state.pose.curvature};
   }
 
   return Trajectory(states);
@@ -231,7 +231,7 @@ void TrajectoryParameterizer::EnforceAccelerationLimits(
     double factor = reverse ? -1.0 : 1.0;
 
     auto minMaxAccel = constraint->MinMaxAcceleration(
-        state->pose.first, state->pose.second, state->maxVelocity * factor);
+        state->pose.pose, state->pose.curvature, state->maxVelocity * factor);
 
     if (minMaxAccel.minAcceleration > minMaxAccel.maxAcceleration) {
       printf("The constraint's min acceleration was greater than its max "

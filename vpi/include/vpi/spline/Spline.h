@@ -30,8 +30,6 @@ namespace vpi {
 template <int Degree>
 class Spline {
  public:
-  using PoseWithCurvature = std::pair<Pose2d, QCurvature>;
-
   Spline() = default;
 
   Spline(const Spline&) = default;
@@ -60,7 +58,7 @@ class Spline {
    * @param t The point t
    * @return The pose and curvature at that point.
    */
-  PoseWithCurvature GetPoint(double t) const {
+  Pose2dWithCurvature GetPoint(double t) const {
     Eigen::Vector<double, Degree + 1> polynomialBases;
 
     // Populate the polynomial bases
@@ -95,9 +93,9 @@ class Spline {
     const auto curvature =
         (dx * ddy - ddx * dy) / ((dx * dx + dy * dy) * std::hypot(dx, dy));
 
-    return {
-        {FromVector(combined.template block<2, 1>(0, 0)), Rotation2d(dx, dy)},
-        curvature * radpermeter};
+    Pose2d p(FromVector(combined.template block<2, 1>(0, 0)), Rotation2d(dx, dy));
+    Pose2dWithCurvature retval(p, curvature * radpermeter);
+    return retval;
   }
 
  protected:

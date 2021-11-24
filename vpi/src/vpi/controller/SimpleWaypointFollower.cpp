@@ -6,7 +6,7 @@
 
 namespace vpi {
 
-void SimpleWaypointFollower::FollowTrajectory(std::vector<Pose2d> iwaypoints, 
+void SimpleWaypointFollower::FollowTrajectory(std::vector<VexGpsPose2d> iwaypoints, 
                                                 QSpeed s) {
   for(auto wp : iwaypoints) {
     Point2d target(wp.X(), wp.Y());
@@ -14,7 +14,7 @@ void SimpleWaypointFollower::FollowTrajectory(std::vector<Pose2d> iwaypoints,
   }
 }
 
-void SimpleWaypointFollower::FollowTrajectory(std::initializer_list<Pose2d> iwaypoints, 
+void SimpleWaypointFollower::FollowTrajectory(std::initializer_list<VexGpsPose2d> iwaypoints, 
                                                 QSpeed s) {
   for(auto wp : iwaypoints) {
     Point2d target(wp.X(), wp.Y());

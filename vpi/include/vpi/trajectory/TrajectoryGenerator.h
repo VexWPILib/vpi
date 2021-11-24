@@ -26,7 +26,6 @@ namespace vpi {
  */
 class TrajectoryGenerator {
  public:
-  using PoseWithCurvature = std::pair<Pose2d, QCurvature>;
 
   /**
    * Generates a trajectory from the given control vectors and config. This
@@ -58,8 +57,8 @@ class TrajectoryGenerator {
    * @return The generated trajectory.
    */
   static Trajectory GenerateTrajectory(
-      const Pose2d& start, const std::vector<Translation2d>& interiorWaypoints,
-      const Pose2d& end, const TrajectoryConfig& config);
+      const VexGpsPose2d& start, const std::vector<Translation2d>& interiorWaypoints,
+      const VexGpsPose2d& end, const TrajectoryConfig& config);
 
   /**
    * Generates a trajectory from the given quintic control vectors and config.
@@ -80,7 +79,10 @@ class TrajectoryGenerator {
    * uses quintic hermite splines -- therefore, all points must be represented
    * by Pose2d objects. Continuous curvature is guaranteed in this method.
    *
-   * @param waypoints List of waypoints..
+   * Generally one should specify a Trajectory by using the method that
+   * utilizes the `VexGpsPose2d start` and `VexGpsPose2d end` parameters.
+   *
+   * @param waypoints List of waypoints.
    * @param config    The configuration for the trajectory.
    * @return The generated trajectory.
    */
@@ -96,10 +98,10 @@ class TrajectoryGenerator {
    * @return The spline points for use in time parameterization of a trajectory.
    */
   template <typename Spline>
-  static std::vector<PoseWithCurvature> SplinePointsFromSplines(
+  static std::vector<Pose2dWithCurvature> SplinePointsFromSplines(
       const std::vector<Spline>& splines) {
     // Create the vector of spline points.
-    std::vector<PoseWithCurvature> splinePoints;
+    std::vector<Pose2dWithCurvature> splinePoints;
 
     // Add the first point to the vector.
     splinePoints.push_back(splines.front().GetPoint(0.0));

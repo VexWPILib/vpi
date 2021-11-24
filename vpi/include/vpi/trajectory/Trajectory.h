@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "vpi/geometry/Pose2d.h"
+#include "vpi/geometry/VexGpsPose2d.h"
 #include "vpi/geometry/Transform2d.h"
 #include "vpi/units/QAcceleration.h"
 #include "vpi/units/QCurvature.h"
@@ -39,7 +40,7 @@ class Trajectory {
     QAcceleration acceleration = 0_mps2;
 
     // The pose at that point of the trajectory.
-    Pose2d pose;
+    Pose2d pose = Pose2d({0_m, 0_m}, 0_deg);
 
     // The curvature at that point of the trajectory.
     QCurvature curvature = 0.0_radpermeter;
@@ -140,7 +141,7 @@ class Trajectory {
    *
    * @return The initial pose of the trajectory.
    */
-  Pose2d InitialPose() const { return Sample(0_s).pose; }
+  VexGpsPose2d InitialPose() const { return Sample(0_s).pose; }
 
   /**
    * Checks equality between this Trajectory and another object.

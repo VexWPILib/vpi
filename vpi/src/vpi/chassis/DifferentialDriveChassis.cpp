@@ -63,7 +63,8 @@ namespace vpi {
             QAngle h = gps.heading(rotationUnits::deg) * degree;
             QLength x = gps.xPosition(distanceUnits::in) * inch;
             QLength y = gps.yPosition(distanceUnits::in) * inch;
-            Pose2d gpsPose(x,y,h);
+            // Pose2d gpsPose(x,y,h);
+            VexGpsPose2d gpsPose(x,y,h);
             m_odometry.ResetPosition(gpsPose);
             // When calling m_odometry.ResetPosition, you must also
             // reset the sensors feeding into it
