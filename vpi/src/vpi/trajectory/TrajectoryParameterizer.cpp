@@ -201,7 +201,8 @@ Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
         // delta_x = v * t
         dt = ds / v;
       } else {
-        printf("Something went wrong at iteration %d of time parameterization.\n",i);
+        Logger::log(Logger::LogLevel::ERROR,
+                  "Something went wrong at iteration %d of time parameterization.",i);
         /*
         throw std::runtime_error(fmt::format(
             "Something went wrong at iteration {} of time parameterization.",
@@ -234,10 +235,11 @@ void TrajectoryParameterizer::EnforceAccelerationLimits(
         state->pose.pose, state->pose.curvature, state->maxVelocity * factor);
 
     if (minMaxAccel.minAcceleration > minMaxAccel.maxAcceleration) {
-      printf("The constraint's min acceleration was greater than its max "
-          "acceleration. To debug this, remove all constraints from the config "
-          "and add each one individually. If the offending constraint was "
-          "packaged with WPILib, please file a bug report.\n");
+      Logger::log(Logger::LogLevel::ERROR,
+                "The constraint's min acceleration was greater than its max "
+                "acceleration. To debug this, remove all constraints from the config "
+                "and add each one individually. If the offending constraint was "
+                "packaged with WPILib, please file a bug report.");
       /*
       throw std::runtime_error(
           "The constraint's min acceleration was greater than its max "
