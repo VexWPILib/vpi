@@ -157,8 +157,8 @@ namespace vpi {
         m_drivetrain.TankDrive(leftSpeed, rightSpeed, squareInputs);
       }
 
-      virtual void ResetPosition(const Pose2d& pose, const Rotation2d& gyroAngle) {
-
+      virtual void ResetPosition(const VexGpsPose2d& pose, const Rotation2d& gyroAngle) {
+        m_odometry.ResetPosition(pose, gyroAngle);
       }
 
       /**
@@ -186,6 +186,12 @@ namespace vpi {
       * @endcode
       */
       void EnableOdom();
+      
+      void DisableOdom();
+
+      bool IsOdomEnabled() {
+        return m_odomEnabled;
+      }
 
       /**
       * Configures inertial sensors. These are assumed to have

@@ -8,19 +8,38 @@
 
 #pragma once
 
-#include "vpi/units/QLength.h" 
+#include "vpi/units/QLength.h"
+#include "vpi/units/QCurvature.h"
 #include "vpi/geometry/Point2d.h"
 #include "vpi/geometry/Transform2d.h"
 #include "vpi/geometry/Translation2d.h"
 #include "vpi/geometry/Twist2d.h"
 
+
 namespace vpi {
+
+// Forward declare VexGpsPose2d to avoid circular dependencies
+class VexGpsPose2d;
 
 /**
  * Represents a 2d pose containing translational and rotational elements.
+ *
+ * When using Odometry for VRC field co-ordinates, @see VexGpsPose2d
+ *
+ * @see VexGpsPose2d
  */
 class Pose2d {
  public:
+  // Conversions between Pose2d and VexGpsPose2d
+  // -------------------------------------------
+  // Constructor
+  Pose2d(const VexGpsPose2d& v);
+  // Assignment
+  Pose2d& operator=(const VexGpsPose2d& v);
+   // Type-cast
+  operator VexGpsPose2d();
+  // -------------------------------------------
+
   /**
    * Constructs a pose at the origin facing toward the positive X axis.
    * (Translation2d{0, 0} and Rotation{0})
@@ -31,9 +50,9 @@ class Pose2d {
    * Constructs a pose with the specified translation and rotation.
    *
    * @param translation The translational component of the pose.
-   * @param rotation The rotational component of the pose.
+   * @param r The rotational component of the pose.
    */
-  Pose2d(Translation2d translation, Rotation2d rotation);
+  Pose2d(Translation2d translation, Rotation2d r);
 
   /**
    * Convenience constructors that takes in x and y values directly instead of
@@ -41,9 +60,9 @@ class Pose2d {
    *
    * @param x The x component of the translational component of the pose.
    * @param y The y component of the translational component of the pose.
-   * @param rotation The rotational component of the pose.
+   * @param r The rotational component of the pose.
    */
-  Pose2d(QLength x, QLength y, Rotation2d rotation);
+  Pose2d(QLength x, QLength y, Rotation2d r);
 
   /**
    * Transforms the pose by the given transformation and returns the new
@@ -198,6 +217,15 @@ class Pose2d {
  private:
   Translation2d m_translation;
   Rotation2d m_rotation;
+};
+
+struct Pose2dWithCurvature {
+  Pose2d pose;
+  QCurvature curvature;
+
+  Pose2dWithCurvature(Pose2d p, QCurvature c) : pose(p), curvature(c) {}
+  Pose2dWithCurvature() : pose({0_m, 0_m}, 0_deg),
+                          curvature() {}
 };
 
 }  // namespace vpi

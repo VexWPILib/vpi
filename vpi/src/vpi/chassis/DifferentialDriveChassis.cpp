@@ -28,7 +28,21 @@ namespace vpi {
     m_rightSensor = new MotorGroupRotationSensor(rightMotorGroup, gs);
   }
 
+  void DifferentialDriveChassis::DisableOdom() {
+    if(!m_odomEnabled) {
+      return;
+    }
+    if(m_odomTask != NULL) {
+      m_odomTask->stop();
+      m_odomTask = NULL;
+    }
+    m_odomEnabled = false;
+  }
+
   void DifferentialDriveChassis::EnableOdom() {
+    if(m_odomEnabled) {
+      return;
+    }
     if(m_odomTask != NULL) {
       m_odomTask->stop();
     }
@@ -63,7 +77,8 @@ namespace vpi {
             QAngle h = gps.heading(rotationUnits::deg) * degree;
             QLength x = gps.xPosition(distanceUnits::in) * inch;
             QLength y = gps.yPosition(distanceUnits::in) * inch;
-            Pose2d gpsPose(x,y,h);
+            // Pose2d gpsPose(x,y,h);
+            VexGpsPose2d gpsPose(x,y,h);
             m_odometry.ResetPosition(gpsPose);
             // When calling m_odometry.ResetPosition, you must also
             // reset the sensors feeding into it

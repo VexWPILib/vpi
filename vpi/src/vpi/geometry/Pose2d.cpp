@@ -8,16 +8,31 @@
 
 #include "vpi/units/QLength.h"
 #include "vpi/geometry/Pose2d.h"
+#include "vpi/geometry/VexGpsPose2d.h"
+#include "vpi/units/UnitUtils.h"
 
 #include <cmath>
 
 using namespace vpi;
 
-Pose2d::Pose2d(Translation2d translation, Rotation2d rotation)
-    : m_translation(translation), m_rotation(rotation) {}
+Pose2d::Pose2d(Translation2d translation, Rotation2d r)
+    : m_translation(translation), m_rotation(r) {}
 
-Pose2d::Pose2d(QLength x, QLength y, Rotation2d rotation)
-    : m_translation(x, y), m_rotation(rotation) {}
+Pose2d::Pose2d(QLength x, QLength y, Rotation2d r)
+    : m_translation(x, y), m_rotation(r) {}
+
+Pose2d::Pose2d(const VexGpsPose2d& v)
+    : m_translation(v.X(), v.Y()), m_rotation(UnitUtils::constrainTo180(90_deg - v.Theta())) {}
+
+Pose2d& Pose2d::operator=(const VexGpsPose2d& v) {
+  this->m_translation = Translation2d(v.X(), v.Y());
+  this->m_rotation = Rotation2d(UnitUtils::constrainTo180(90_deg - v.Theta()));
+  return *this;
+}
+
+Pose2d::operator VexGpsPose2d() {
+  return VexGpsPose2d(X(), Y(), UnitUtils::constrainTo180(90_deg - Rotation().ToAngle()));
+}
 
 Pose2d Pose2d::operator+(const Transform2d& other) const {
   return TransformBy(other);

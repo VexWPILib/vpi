@@ -25,7 +25,6 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
     const std::vector<Translation2d>& interiorWaypoints,
     Spline<3>::ControlVector end, const TrajectoryConfig& config) {
   const Transform2d flip{Translation2d(), Rotation2d(180_deg)};
-  printf("  TrajectoryGenerator::GenerateTrajectory started\n");
   // Make theta normal for trajectory generation if path is reversed.
   // Flip the headings.
   if (config.IsReversed()) {
@@ -35,7 +34,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
     end.y[1] *= -1;
   }
 
-  std::vector<vpi::SplineParameterizer::PoseWithCurvature> points;
+  std::vector<vpi::Pose2dWithCurvature> points;
   points =
       SplinePointsFromSplines(SplineHelper::CubicSplinesFromControlVectors(
           initial, interiorWaypoints, end));
@@ -44,7 +43,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
   // field. Also fix curvature.
   if (config.IsReversed()) {
     for (auto& point : points) {
-      point = {point.first + flip, -point.second};
+      point = {point.pose + flip, -point.curvature};
     }
   }
 
@@ -55,8 +54,8 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
 }
 
 Trajectory TrajectoryGenerator::GenerateTrajectory(
-    const Pose2d& start, const std::vector<Translation2d>& interiorWaypoints,
-    const Pose2d& end, const TrajectoryConfig& config) {
+    const VexGpsPose2d& start, const std::vector<Translation2d>& interiorWaypoints,
+    const VexGpsPose2d& end, const TrajectoryConfig& config) {
   std::array<Spline<3>::ControlVector, 2> cv = SplineHelper::CubicControlVectorsFromWaypoints(
       start, interiorWaypoints, end);
   return GenerateTrajectory(cv[0], interiorWaypoints, cv[1], config);
@@ -75,7 +74,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
     }
   }
 
-  std::vector<vpi::SplineParameterizer::PoseWithCurvature> points;
+  std::vector<vpi::Pose2dWithCurvature> points;
   points = SplinePointsFromSplines(
       SplineHelper::QuinticSplinesFromControlVectors(controlVectors));
 
@@ -83,7 +82,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
   // field. Also fix curvature.
   if (config.IsReversed()) {
     for (auto& point : points) {
-      point = {point.first + flip, -point.second};
+      point = {point.pose + flip, -point.curvature};
     }
   }
 
@@ -103,7 +102,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
     }
   }
 
-  std::vector<SplineParameterizer::PoseWithCurvature> points;
+  std::vector<Pose2dWithCurvature> points;
   points = SplinePointsFromSplines(
       SplineHelper::QuinticSplinesFromWaypoints(newWaypoints));
 
@@ -111,7 +110,7 @@ Trajectory TrajectoryGenerator::GenerateTrajectory(
   // field. Also fix curvature.
   if (config.IsReversed()) {
     for (auto& point : points) {
-      point = {point.first + flip, -point.second};
+      point = {point.pose + flip, -point.curvature};
     }
   }
 

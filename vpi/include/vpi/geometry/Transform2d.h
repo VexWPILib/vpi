@@ -32,9 +32,9 @@ class Transform2d {
    * Constructs a transform with the given translation and rotation components.
    *
    * @param translation Translational component of the transform.
-   * @param rotation Rotational component of the transform.
+   * @param r Rotational component of the transform.
    */
-  Transform2d(Translation2d translation, Rotation2d rotation);
+  Transform2d(Translation2d translation, Rotation2d r);
 
   /**
    * Constructs the identity transform -- maps an initial pose to itself.

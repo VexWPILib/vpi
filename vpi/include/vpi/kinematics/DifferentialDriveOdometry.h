@@ -10,6 +10,7 @@
 
 #include "vpi/kinematics/DifferentialDriveKinematics.h"
 #include "vpi/geometry/Pose2d.h"
+#include "vpi/geometry/VexGpsPose2d.h"
 #include "vpi/units/QLength.h"
 
 namespace vpi {
@@ -52,7 +53,7 @@ class DifferentialDriveOdometry {
                                      const QLength& wheelDiameter,
                                      const Rotation2d& gyroAngle,
                                      const double& gearRatio = 1.0,
-                                     const Pose2d& initialPose = Pose2d());
+                                     const Pose2d& initialPose = Pose2d({0_m, 0_m}, 0_deg));
 
   /**
    * Resets the robot's position on the field.
@@ -65,10 +66,10 @@ class DifferentialDriveOdometry {
    * @param pose The position on the field that your robot is at.
    * @param gyroAngle The angle reported by the gyroscope.
    */
-  virtual void ResetPosition(const Pose2d& pose, const Rotation2d& gyroAngle) {
+  virtual void ResetPosition(const VexGpsPose2d& pose, const Rotation2d& gyroAngle) {
     m_pose = pose;
-    m_previousAngle = pose.Rotation();
-    m_gyroOffset = m_pose.Rotation() - gyroAngle;
+    m_previousAngle = m_pose.Rotation();
+    m_gyroOffset = Rotation2d(pose.Theta()) - gyroAngle;
 
     m_prevLeftDistance = 0_m;
     m_prevRightDistance = 0_m;
@@ -83,9 +84,9 @@ class DifferentialDriveOdometry {
    * @param pose The position on the field that your robot is at.
    * @param gyroAngle The angle reported by the gyroscope.
    */
-  virtual void ResetPosition(const Pose2d& pose) {
+  virtual void ResetPosition(const VexGpsPose2d& pose) {
     m_pose = pose;
-    m_previousAngle = pose.Rotation();
+    m_previousAngle = Rotation2d(pose.Theta());
 
     m_prevLeftDistance = 0_m;
     m_prevRightDistance = 0_m;
