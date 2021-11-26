@@ -201,7 +201,7 @@ Trajectory TrajectoryParameterizer::TimeParameterizeTrajectory(
         // delta_x = v * t
         dt = ds / v;
       } else {
-        Logger::log(Logger::LogLevel::ERROR,
+        logger.log(Logger::LogLevel::ERROR,
                   "Something went wrong at iteration %d of time parameterization.",i);
         /*
         throw std::runtime_error(fmt::format(
@@ -235,7 +235,7 @@ void TrajectoryParameterizer::EnforceAccelerationLimits(
         state->pose.pose, state->pose.curvature, state->maxVelocity * factor);
 
     if (minMaxAccel.minAcceleration > minMaxAccel.maxAcceleration) {
-      Logger::log(Logger::LogLevel::ERROR,
+      logger.log(Logger::LogLevel::ERROR,
                 "The constraint's min acceleration was greater than its max "
                 "acceleration. To debug this, remove all constraints from the config "
                 "and add each one individually. If the offending constraint was "

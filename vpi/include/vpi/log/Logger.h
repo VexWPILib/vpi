@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+
 namespace vpi {
   /**
    * Helper class for logging information
@@ -19,11 +23,13 @@ namespace vpi {
         ERROR
       } LogLevel;
 
-      static void setLevel(LogLevel level) {
+      Logger(LogLevel level=LogLevel::WARN) : m_currentLogLevel(level) {}
+
+      void setLevel(LogLevel level) {
         m_currentLogLevel = level;
       }
 
-      static void log(LogLevel level, const char* fmt, ...) {
+      void log(LogLevel level, const char* fmt, ...) {
         va_list args;
         va_start(args, fmt);
         if(level >= m_currentLogLevel) {
@@ -42,8 +48,9 @@ namespace vpi {
         va_end(args);
       }
 
-      static LogLevel m_currentLogLevel;
+      private:
+        LogLevel m_currentLogLevel;
   };
 
-  Logger::LogLevel Logger::m_currentLogLevel = Logger::LogLevel::WARN;
+  extern Logger logger;
 } // namespace vpi

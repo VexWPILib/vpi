@@ -15,7 +15,7 @@ void RamseteTrajectoryFollower::FollowTrajectory(Trajectory t) {
     VexGpsPose2d curStateVex = curState;
     VexGpsPose2d desiredStateVex = states[i].pose;
     ChassisSpeeds cs = m_rc.Calculate(m_chassis.GetPose(), states[i]);
-    Logger::log(Logger::LogLevel::DEBUG,
+    logger.log(Logger::LogLevel::DEBUG,
           "RamseteTrajectoryFollower::FollowTrajectory - state index %d - "
           "\n\tCurrent Pose : (%d, %d) H: %d"
           "\n\tTarget: (%d, %d) H %d vx %.3lf omega %.3lf acc %.3lf"
