@@ -219,8 +219,8 @@ namespace vpi {
       * }
       * @endcode
       */
-      void AddInertialSensors(std::vector<vex::inertial> *vinertials) {
-        m_inertials = vinertials;
+      void AddInertialSensor(vex::inertial &s) {
+        m_inertials.emplace_back(s);
       }
 
       /**
@@ -249,8 +249,8 @@ namespace vpi {
       * }
       * @endcode
       */
-      void AddGpsSensors(std::vector<vex::gps> *vgps) {
-        m_gps_sensors = vgps;
+      void AddGpsSensor(vex::gps &s) {
+        m_gps_sensors.emplace_back(s);
       }
 
       void AddTrackingWheelSensors(QLength odomTrackWidth, 
@@ -316,8 +316,8 @@ namespace vpi {
       AbstractRotationSensor *m_leftSensor = NULL;
       AbstractRotationSensor *m_rightSensor = NULL;
       AbstractRotationSensor *m_strafeSensor = NULL;
-      std::vector<vex::inertial> *m_inertials = NULL;
-      std::vector<vex::gps> *m_gps_sensors = NULL;
+      std::vector<vex::inertial> m_inertials;
+      std::vector<vex::gps> m_gps_sensors;
       double GPS_SENSOR_QUALITY_THRESHOLD = 95;
       bool m_odomEnabled = false;
 
