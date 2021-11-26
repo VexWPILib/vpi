@@ -61,6 +61,7 @@ extern brain Brain;
 #include "vpi/kinematics/MecanumDriveKinematics.h"
 #include "vpi/kinematics/MecanumDriveOdometry.h"
 #include "vpi/kinematics/MecanumDriveWheelSpeeds.h"
+#include "vpi/log/Logger.h"
 #include "vpi/pid/PIDController.h"
 #include "vpi/spline/CubicHermiteSpline.h"
 #include "vpi/spline/QuinticHermiteSpline.h"

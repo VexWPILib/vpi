@@ -8,6 +8,7 @@
 #include "vpi/chassis/DifferentialDriveChassis.h"
 #include "vpi/kinematics/ChassisSpeeds.h"
 #include "vpi/kinematics/DifferentialDriveWheelSpeeds.h"
+#include "vpi/log/Logger.h"
 #include "vpi/trajectory/Trajectory.h"
 #include "vpi/units/QTime.h"
 

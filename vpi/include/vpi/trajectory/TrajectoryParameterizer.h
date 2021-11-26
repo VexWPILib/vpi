@@ -38,6 +38,7 @@
 
 #include <stdio.h>
 
+#include "vpi/log/Logger.h"
 #include "vpi/trajectory/Trajectory.h"
 #include "vpi/trajectory/TrajectoryConstraint.h"
 
