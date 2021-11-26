@@ -28,7 +28,21 @@ namespace vpi {
     m_rightSensor = new MotorGroupRotationSensor(rightMotorGroup, gs);
   }
 
+  void DifferentialDriveChassis::DisableOdom() {
+    if(!m_odomEnabled) {
+      return;
+    }
+    if(m_odomTask != NULL) {
+      m_odomTask->stop();
+      m_odomTask = NULL;
+    }
+    m_odomEnabled = false;
+  }
+
   void DifferentialDriveChassis::EnableOdom() {
+    if(m_odomEnabled) {
+      return;
+    }
     if(m_odomTask != NULL) {
       m_odomTask->stop();
     }

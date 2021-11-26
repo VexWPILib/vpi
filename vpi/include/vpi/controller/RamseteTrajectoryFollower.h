@@ -23,6 +23,9 @@ class RamseteTrajectoryFollower {
                               double b=2.0, double zeta=0.7) :
         m_chassis(chassis), m_rc(b, zeta) {
       m_rc.SetTolerance(tolerance);
+      if(!m_chassis.IsOdomEnabled()) {
+        m_chassis.EnableOdom();
+      }
     }
 
     void FollowTrajectory(Trajectory t);
