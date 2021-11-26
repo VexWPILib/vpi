@@ -70,25 +70,23 @@ namespace vpi {
   }
 
   const Pose2d& DifferentialDriveChassis::UpdateOdometry() {
-    if(m_gps_sensors != NULL) {
-      if(m_gps_sensors->size() > 0) {
-        for(auto gps : *m_gps_sensors) {
-          if(gps.quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
-            QAngle h = gps.heading(rotationUnits::deg) * degree;
-            QLength x = gps.xPosition(distanceUnits::in) * inch;
-            QLength y = gps.yPosition(distanceUnits::in) * inch;
-            // Pose2d gpsPose(x,y,h);
-            VexGpsPose2d gpsPose(x,y,h);
-            m_odometry.ResetPosition(gpsPose);
-            // When calling m_odometry.ResetPosition, you must also
-            // reset the sensors feeding into it
-            m_leftSensor->Reset();
-            m_rightSensor->Reset();
-            if(m_strafeSensor != NULL) {
-              m_strafeSensor->Reset();
-            }
-            return m_odometry.GetPose();
+    if(m_gps_sensors.size() > 0) {
+      for(auto gps : m_gps_sensors) {
+        if(gps.quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
+          QAngle h = gps.heading(rotationUnits::deg) * degree;
+          QLength x = gps.xPosition(distanceUnits::in) * inch;
+          QLength y = gps.yPosition(distanceUnits::in) * inch;
+          // Pose2d gpsPose(x,y,h);
+          VexGpsPose2d gpsPose(x,y,h);
+          m_odometry.ResetPosition(gpsPose);
+          // When calling m_odometry.ResetPosition, you must also
+          // reset the sensors feeding into it
+          m_leftSensor->Reset();
+          m_rightSensor->Reset();
+          if(m_strafeSensor != NULL) {
+            m_strafeSensor->Reset();
           }
+          return m_odometry.GetPose();
         }
       }
     }
@@ -99,14 +97,14 @@ namespace vpi {
     QLength ld = UnitUtils::convertRotationToDistance(la, m_odomWheelDiameter, m_gearRatio);
     QLength rd = UnitUtils::convertRotationToDistance(ra, m_odomWheelDiameter, m_gearRatio);
 
-    if(m_inertials == NULL || m_inertials->size() == 0) {
+    if(m_inertials.size() == 0) {
       return m_odometry.Update(ld, rd);
     } else {
       double headingAccumulator = 0;
-      for (auto i : *m_inertials) {
+      for (auto i : m_inertials) {
         headingAccumulator = UnitUtils::constrainTo180((headingAccumulator + i.heading(rotationUnits::deg)) * degree).convert(degree);
       }
-      return m_odometry.Update(headingAccumulator / (double)m_inertials->size() * radian, ld, rd);
+      return m_odometry.Update(headingAccumulator / (double)m_inertials.size() * radian, ld, rd);
     }
   }
 
