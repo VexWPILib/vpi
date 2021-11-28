@@ -8,7 +8,8 @@ using namespace vpi;
 
 namespace vpi {
 
-void RamseteTrajectoryFollower::FollowTrajectory(Trajectory t) {
+void RamseteTrajectoryFollower::FollowTrajectoryImpl(Trajectory t) {
+  m_isMoving = true;
   std::vector<Trajectory::State> states = t.States();
   for(int i = 1; i < states.size(); ++i) {
     Pose2d curState = m_chassis.GetPose();
@@ -35,6 +36,27 @@ void RamseteTrajectoryFollower::FollowTrajectory(Trajectory t) {
     QTime timeToWait = states[i].t - states[i - 1].t;
     wait(timeToWait.convert(millisecond), msec);
   } 
+  m_isMoving = false;
+}
+
+void RamseteTrajectoryFollower::FollowTrajectory(Trajectory t, bool waitForCompletion) {
+  if(waitForCompletion) {
+    FollowTrajectoryImpl(t);
+  } else {
+    // Task management
+    if(m_followerTask != NULL) {
+      m_followerTask->stop();
+    }
+    this->SetTrajectory(t);
+    m_followerTask = new vex::task(RamseteTrajectoryFollower::_trampoline, static_cast<void *>(this));
+  }
+}
+
+int RamseteTrajectoryFollower::_trampoline(void *p_this) {
+  RamseteTrajectoryFollower *p = (RamseteTrajectoryFollower *)p_this;
+  p->FollowTrajectoryImpl();
+
+  return 0;
 }
 
 } // namespace vpi

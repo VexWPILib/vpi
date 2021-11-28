@@ -29,10 +29,24 @@ class RamseteTrajectoryFollower {
       }
     }
 
-    void FollowTrajectory(Trajectory t);
+    void FollowTrajectory(Trajectory t, bool waitForCompletion=true);
 
   protected:
     DifferentialDriveChassis &m_chassis;
     RamseteController m_rc;
+    bool m_isMoving;
+
+    virtual void FollowTrajectoryImpl(Trajectory t);
+    void FollowTrajectoryImpl() { FollowTrajectoryImpl(m_trajectory);}
+
+    void SetTrajectory(Trajectory &t) {
+        m_trajectory = t;
+    }
+
+  private:
+    vex::task *m_followerTask = NULL;
+    static int _trampoline(void *p_this);
+    Trajectory m_trajectory;
+
 };
 } // vpi
