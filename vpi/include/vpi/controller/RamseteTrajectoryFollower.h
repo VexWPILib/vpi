@@ -31,6 +31,8 @@ class RamseteTrajectoryFollower {
 
     void FollowTrajectory(Trajectory t, bool waitForCompletion=true);
 
+    bool IsMoving() {return m_isMoving;}
+
   protected:
     DifferentialDriveChassis &m_chassis;
     RamseteController m_rc;

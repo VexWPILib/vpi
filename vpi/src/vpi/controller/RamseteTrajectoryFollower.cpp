@@ -19,7 +19,8 @@ void RamseteTrajectoryFollower::FollowTrajectoryImpl(Trajectory t) {
     logger.log(Logger::LogLevel::DEBUG,
           "RamseteTrajectoryFollower::FollowTrajectory - state index %d - "
           "\n\tCurrent Pose : (%d, %d) H: %d"
-          "\n\tTarget: (%d, %d) H %d vx %.3lf omega %.3lf acc %.3lf"
+          "\n\tTarget Pose  : (%d, %d) H: %d"
+          "\n\tTarget:   vx %.3lf omega %.3lf acc %.3lf"
           "\n\tAdjusted: vx %.3lf omega %.3lf",
           i, 
           (int)curStateVex.X().convert(inch), (int)curStateVex.Y().convert(inch),
