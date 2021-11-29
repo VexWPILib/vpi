@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "vpi/log/Logger.h"
 #include "vpi/utils.h"
 #include "vpi/units/UnitUtils.h"
 
@@ -19,8 +20,20 @@ using namespace vpi;
 void DifferentialDrive::SetMotorSpeedPercent(double leftSpeed, double rightSpeed)
 {
   // TODO - any filtering of the speeds
-  m_leftMotor->spin(vex::directionType::fwd, leftSpeed * 100.0, vex::percentUnits::pct);
-  m_rightMotor->spin(vex::directionType::fwd, rightSpeed * 100.0, vex::percentUnits::pct);
+  if(fabs(leftSpeed) > 1.0 || fabs(rightSpeed) > 1.0) {
+    logger.log(Logger::LogLevel::WARN, "SetMotorSpeedPercent has value over 1.0 - LeftSpeed: %.3lf RightSpeed: %.3lf",
+              leftSpeed, rightSpeed);
+  }
+  if(leftSpeed > 0) {
+    m_leftMotor->spin(vex::directionType::fwd, fabs(leftSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_leftMotor->spin(vex::directionType::rev, fabs(leftSpeed) * 12.0, vex::voltageUnits::volt);
+  }
+  if(rightSpeed > 0) {
+    m_rightMotor->spin(vex::directionType::fwd, fabs(rightSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_rightMotor->spin(vex::directionType::rev, fabs(rightSpeed) * 12.0, vex::voltageUnits::volt);
+  }
 }
 
 void DifferentialDrive::SetMotorSpeed(QSpeed leftSpeed, QSpeed rightSpeed)
