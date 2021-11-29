@@ -17,11 +17,31 @@ namespace vpi {
 class SimpleWaypointFollower {
   public:
     SimpleWaypointFollower(DifferentialDriveChassis &chassis) :
-        m_chassis(chassis) {}
+        m_chassis(chassis), m_isMoving(false) {}
 
-    void FollowTrajectory(std::vector<VexGpsPose2d> iwaypoints, QSpeed s);
-    void FollowTrajectory(std::initializer_list<VexGpsPose2d> iwaypoints, QSpeed s);
+    void FollowTrajectory(std::vector<VexGpsPose2d> iwaypoints, QSpeed s, bool waitForCompletion=true);
+    void FollowTrajectory(std::initializer_list<VexGpsPose2d> iwaypoints, QSpeed s, bool waitForCompletion=true);
+    virtual bool IsMoving() { return m_isMoving;}
+
   protected:
     DifferentialDriveChassis &m_chassis;
+    bool m_isMoving;
+
+    virtual void FollowTrajectoryImpl(std::vector<VexGpsPose2d> iwaypoints, QSpeed s);
+    void FollowTrajectoryImpl() { FollowTrajectoryImpl(m_waypoints, m_speed);}
+
+    void SetWayPoints(std::vector<VexGpsPose2d> &iwaypoints) {
+        m_waypoints = iwaypoints;
+    }
+
+    void SetSpeed(QSpeed s) {
+        m_speed = s;
+    }
+
+  private:
+    vex::task *m_followerTask = NULL;
+    static int _trampoline(void *p_this);
+    std::vector<VexGpsPose2d> m_waypoints;
+    QSpeed m_speed;
 };
 } // vpi

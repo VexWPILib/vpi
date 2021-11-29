@@ -6,7 +6,8 @@
 
 namespace vpi {
 
-void SimpleTrajectoryFollower::FollowTrajectory(Trajectory t) {
+void SimpleTrajectoryFollower::FollowTrajectoryImpl(Trajectory t) {
+  m_isMoving = true;
   std::vector<Trajectory::State> states = t.States();
   for(int i = 1; i < states.size(); ++i) {
     ChassisSpeeds cs;
@@ -15,7 +16,28 @@ void SimpleTrajectoryFollower::FollowTrajectory(Trajectory t) {
     m_chassis.DriveChassisSpeeds(cs);
     QTime timeToWait = states[i].t - states[i - 1].t;
     wait(timeToWait.convert(millisecond), msec);
-  } 
+  }
+  m_isMoving = false;
+}
+
+void SimpleTrajectoryFollower::FollowTrajectory(Trajectory t, bool waitForCompletion) {
+  if(waitForCompletion) {
+    FollowTrajectoryImpl(t);
+  } else {
+    // Task management
+    if(m_followerTask != NULL) {
+      m_followerTask->stop();
+    }
+    this->SetTrajectory(t);
+    m_followerTask = new vex::task(SimpleTrajectoryFollower::_trampoline, static_cast<void *>(this));
+  }
+}
+
+int SimpleTrajectoryFollower::_trampoline(void *p_this) {
+  SimpleTrajectoryFollower *p = (SimpleTrajectoryFollower *)p_this;
+  p->FollowTrajectoryImpl();
+
+  return 0;
 }
 
 } // namespace vpi
