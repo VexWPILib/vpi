@@ -7,6 +7,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "vpi/drive/MecanumDrive.h"
+#include "vpi/log/Logger.h"
 #include "vpi/utils.h"
 #include "vpi/geometry/Vector2d.h"
 
@@ -16,10 +17,31 @@ void MecanumDrive::SetMotorSpeedPercent(double leftFrontSpeed, double rightFront
                                         double leftRearSpeed, double rightRearSpeed)
 {
   // TODO - any filtering of the speeds
-  m_frontLeftMotor->spin(vex::directionType::fwd, leftFrontSpeed * 100.0, vex::percentUnits::pct);
-  m_frontRightMotor->spin(vex::directionType::fwd, rightFrontSpeed * 100.0, vex::percentUnits::pct);
-  m_rearLeftMotor->spin(vex::directionType::fwd, leftRearSpeed * 100.0, vex::percentUnits::pct);
-  m_rearRightMotor->spin(vex::directionType::fwd, rightRearSpeed * 100.0, vex::percentUnits::pct);
+  if(fabs(leftFrontSpeed) > 1.0 || fabs(leftRearSpeed) > 1.0 ||
+      fabs(rightFrontSpeed) > 1.0 || fabs(rightRearSpeed) > 1.0 ) {
+    logger.log(Logger::LogLevel::WARN, "SetMotorSpeedPercent has value over 1.0 - LF: %.3lf LR: %.3lf RF: %.3lf RR: %.3lf",
+              leftFrontSpeed, leftRearSpeed, rightFrontSpeed, rightRearSpeed);
+  }
+  if(leftFrontSpeed > 0) {
+    m_frontLeftMotor->spin(vex::directionType::fwd, fabs(leftFrontSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_frontLeftMotor->spin(vex::directionType::rev, fabs(leftFrontSpeed) * 12.0, vex::voltageUnits::volt);
+  }
+  if(leftRearSpeed > 0) {
+    m_rearLeftMotor->spin(vex::directionType::fwd, fabs(leftRearSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_rearLeftMotor->spin(vex::directionType::rev, fabs(leftRearSpeed) * 12.0, vex::voltageUnits::volt);
+  }
+  if(rightFrontSpeed > 0) {
+    m_frontRightMotor->spin(vex::directionType::fwd, fabs(rightFrontSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_frontRightMotor->spin(vex::directionType::rev, fabs(rightFrontSpeed) * 12.0, vex::voltageUnits::volt);
+  }
+  if(rightRearSpeed > 0) {
+    m_rearRightMotor->spin(vex::directionType::fwd, fabs(rightRearSpeed) * 12.0, vex::voltageUnits::volt);
+  } else {
+    m_rearRightMotor->spin(vex::directionType::rev, fabs(rightRearSpeed) * 12.0, vex::voltageUnits::volt);
+  }
 }
 
 void MecanumDrive::SetMotorSpeed(QSpeed leftFrontSpeed, QSpeed rightFrontSpeed,

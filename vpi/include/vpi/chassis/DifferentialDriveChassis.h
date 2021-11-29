@@ -140,7 +140,7 @@ namespace vpi {
       *                      [-1.0..1.0]. Clockwise is positive.
       * @param squareInputs If set, decreases the input sensitivity at low speeds.
       */
-      void ArcadeDrive(double xSpeed, double zRotation, bool squareInputs = true) {
+      void ArcadeDrive(double xSpeed, double zRotation, bool squareInputs = false) {
         m_drivetrain.ArcadeDrive(xSpeed, zRotation, squareInputs);
       }
 
@@ -153,7 +153,7 @@ namespace vpi {
       *                      [-1.0..1.0]. Forward is positive.
       * @param squareInputs If set, decreases the input sensitivity at low speeds.
       */
-      void TankDrive(double leftSpeed, double rightSpeed, bool squareInputs = true) {
+      void TankDrive(double leftSpeed, double rightSpeed, bool squareInputs = false) {
         m_drivetrain.TankDrive(leftSpeed, rightSpeed, squareInputs);
       }
 
