@@ -69,15 +69,12 @@ vpath %.h . vpi/ include/ vpi/include/ lib/ lib/include
 PROJECTLIB = libvpi
 
 # build targets
-all: $(BUILD)/$(PROJECTLIB).a inc liblvgl
+all: $(BUILD)/$(PROJECTLIB).a inc
 
 # copy vpi header files
-.PHONY: inc liblvgl
+.PHONY: inc
 inc: $(VPI_DST_H)
 	$(ECHO) "Copy headers to build folder"
-
-liblvgl: $(LVGL_DST_LIB) $(LVGL_DST_H)
-	$(ECHO) "Copy liblvgl to build folder"
 
 # include build rules
 include vex/mkrules.mk
