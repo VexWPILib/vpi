@@ -13,14 +13,8 @@
 
 using namespace vex;
 extern brain Brain;
+extern competition Competition;
 // End vex.h
-
-//
-
-// Per jpearman for LVGL support from:
-// https://www.vexforum.com/t/setting-pictures-as-covers-for-programs/94777/11
-#include "v5lvgl.h"
-#include "lv_conf.h"
 
 #undef __ARM_NEON__
 #undef __ARM_NEON
@@ -78,6 +72,11 @@ extern brain Brain;
 #include "vpi/trajectory/TrajectoryGenerator.h"
 #include "vpi/trajectory/TrajectoryParameterizer.h"
 #include "vpi/trajectory/TrapezoidProfile.h"
+/*
+#include "vpi/ui/Button.h"
+#include "vpi/ui/Graph.h"
+#include "vpi/ui/LayoutManager.h"
+*/
 #include "vpi/units/QAcceleration.h"
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QAngularAcceleration.h"
