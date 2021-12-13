@@ -127,7 +127,9 @@ class PIDController {
                 std::function<void(double)> useOutput,
                 QTime period = 20_ms);
 
-  ~PIDController() = default;
+  ~PIDController() {
+    Disable();
+  }
 
   PIDController(const PIDController&) = default;
   PIDController& operator=(const PIDController&) = default;
@@ -270,6 +272,10 @@ class PIDController {
 
   void SetEnabled(bool enable);
 
+  void Enable();
+  void Disable();
+  bool CheckEnabled();
+
  private:
   // Factors for PIDF controls
   PIDFParameters m_P;
@@ -312,10 +318,6 @@ class PIDController {
   vex::mutex m_mutex;
 
   bool m_enabled = false;
-
-  void Enable();
-  void Disable();
-  bool CheckEnabled();
 
   vex::task *m_controlTask = NULL;
 
