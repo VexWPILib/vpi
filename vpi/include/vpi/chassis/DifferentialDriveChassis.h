@@ -123,10 +123,13 @@ namespace vpi {
                                double gearRatio = 1.0,
                                vex::brakeType brake = vex::brakeType::brake);
 
-      ~DifferentialDriveChassis() = default;
+      virtual ~DifferentialDriveChassis() {
+        DisableOdom();
+      }
 
       DifferentialDriveChassis(DifferentialDriveChassis&&) = default;
       DifferentialDriveChassis& operator=(DifferentialDriveChassis&&) = default;
+      
 
       /**
       * Arcade drive method for differential drive platform.

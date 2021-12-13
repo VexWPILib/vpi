@@ -131,6 +131,22 @@ namespace vpi {
     virtual void DriveToPoint(Point2d target, QSpeed movementSpeed,
                         bool waitForCompletion=true) override;
 
+    virtual ~DifferentialDriveChassisPID() {
+      DisableOdom();
+      if(m_pidDistanceController != NULL) {
+        m_pidDistanceController->Disable();
+        m_pidDistanceController = NULL;
+      }
+      if(m_pidAngleController != NULL) {
+        m_pidAngleController->Disable();
+        m_pidAngleController = NULL;
+      }
+      if(m_pidTurnController != NULL) {
+        m_pidTurnController->Disable();
+        m_pidTurnController = NULL;
+      }
+    }
+
     protected:
     PIDController* m_pidDistanceController = NULL;
     PIDController* m_pidAngleController = NULL;
