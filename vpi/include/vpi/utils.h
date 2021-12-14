@@ -31,6 +31,15 @@ class VpiUtils {
     }
   }
 
+  static double JoystickCurve(double x, double t) {
+    // Based on https://www.vexforum.com/t/team-5225a-in-the-zone-code-release-yes-you-read-that-right/63199/10
+    // See also: https://www.desmos.com/calculator/0pehlqdjml
+    double e_neg_t_over_10 = std::pow(M_E, t/-10.0);
+    double e_abs_x_minus_100_over_10 = std::pow(M_E, (std::abs(x) - 100.0) / 10.0);
+    double retval = x * (e_neg_t_over_10 + e_abs_x_minus_100_over_10 * (1.0 - e_neg_t_over_10));
+    return retval;
+  }
+
   template <typename T>
   static T clip(const T& n, const T& lower, const T& upper) {
     return std::max(lower, std::min(n, upper));
