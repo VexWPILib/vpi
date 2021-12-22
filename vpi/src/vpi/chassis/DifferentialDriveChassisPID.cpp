@@ -83,7 +83,7 @@ QAngle DifferentialDriveChassisPID::AngleToTarget() {
   m_mutex.unlock();
 }
 
-void DifferentialDriveChassisPID::TurnToPoint(Point2d target, 
+void DifferentialDriveChassisPID::TurnToPoint(VexGpsPose2d target, 
                         QAngularSpeed turnSpeed, 
                         bool waitForCompletion)
 {
@@ -91,7 +91,7 @@ void DifferentialDriveChassisPID::TurnToPoint(Point2d target,
   m_pidDistanceController->SetEnabled(false);
   m_pidAngleController->SetEnabled(false);
   m_pidTurnController->SetEnabled(false);
-  m_targetPoint = new Point2d(target);
+  m_targetPoint = new Point2d(target.X(), target.Y());
   Pose2d p = GetPose();
   m_startPoint = new Point2d(p.X(), p.Y());
   m_targetSpeed = NULL;
@@ -176,7 +176,7 @@ void DifferentialDriveChassisPID::ConsumeAnglePID(double a)
   m_drivetrain.DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
 }
 
-void DifferentialDriveChassisPID::DriveToPoint(Point2d target, 
+void DifferentialDriveChassisPID::DriveToPoint(VexGpsPose2d target, 
                         QSpeed movementSpeed, 
                         bool waitForCompletion)
 {
@@ -191,7 +191,7 @@ void DifferentialDriveChassisPID::DriveToPoint(Point2d target,
   m_pidTurnController->SetEnabled(false);
   Pose2d p = GetPose();
   m_startPoint = new Point2d(p.X(), p.Y());
-  m_targetPoint = new Point2d(target);
+  m_targetPoint = new Point2d(target.X(), target.Y());
   m_targetSpeed = new QSpeed(movementSpeed);
   m_targetAngularSpeed = NULL;
   m_desiredWheelSpeeds = new DifferentialDriveWheelSpeeds();

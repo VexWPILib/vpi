@@ -278,7 +278,7 @@ namespace vpi {
         m_drivetrain.TurnAngle(target, turnSpeed, waitForCompletion);
       }
 
-      virtual void TurnToPoint(Point2d target, 
+      virtual void TurnToPoint(VexGpsPose2d target, 
                        QAngularSpeed turnSpeed,
                        bool waitForCompletion=true) {
         m_drivetrain.TurnToPoint(m_odometry.GetPose(), target, turnSpeed, waitForCompletion);
@@ -290,7 +290,7 @@ namespace vpi {
         m_drivetrain.DriveDistance(target, movementSpeed, waitForCompletion);
       }
 
-      virtual void DriveToPoint(Point2d target, 
+      virtual void DriveToPoint(VexGpsPose2d target, 
                         QSpeed movementSpeed,
                         bool waitForCompletion=true) {
         QAngularSpeed turnSpeed = UnitUtils::convertLinearSpeedToRotationalSpeed(movementSpeed,

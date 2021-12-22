@@ -7,6 +7,7 @@
 #include "vex.h"
 #include "vpi/geometry/Point2d.h"
 #include "vpi/geometry/Pose2d.h"
+#include "vpi/geometry/VexGpsPose2d.h"
 #include "vpi/kinematics/ChassisSpeeds.h"
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QLength.h"
@@ -129,7 +130,7 @@ class RobotDriveBase {
    *
    * @param waitForCompletion Block until movement completes
    */
-  virtual void TurnToPoint(Pose2d currentPose, Point2d target, 
+  virtual void TurnToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                           QAngularSpeed turnSpeed,
                           bool waitForCompletion=true) = 0;
 
@@ -148,7 +149,7 @@ class RobotDriveBase {
    *
    * @param waitForCompletion Block until movement completes
    */
-  virtual void DriveToPoint(Pose2d currentPose, Point2d target, 
+  virtual void DriveToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                           QSpeed movementSpeed,
                           bool waitForCompletion=true) = 0;
 
