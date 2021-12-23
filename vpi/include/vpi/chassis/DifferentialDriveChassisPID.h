@@ -120,7 +120,7 @@ namespace vpi {
 
     virtual void Reset();
 
-    virtual void TurnToPoint(Point2d target, 
+    virtual void TurnToPoint(VexGpsPose2d target, 
                       QAngularSpeed turnSpeed,
                       bool waitForCompletion=true) override;
 
@@ -128,7 +128,7 @@ namespace vpi {
                         QSpeed movementSpeed,
                         bool waitForCompletion=true) override;
 
-    virtual void DriveToPoint(Point2d target, QSpeed movementSpeed,
+    virtual void DriveToPoint(VexGpsPose2d target, QSpeed movementSpeed,
                         bool waitForCompletion=true) override;
 
     virtual ~DifferentialDriveChassisPID() {

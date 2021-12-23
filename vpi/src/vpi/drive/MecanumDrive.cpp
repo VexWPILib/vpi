@@ -159,10 +159,11 @@ void MecanumDrive::TurnAngle(QAngle target,
                               s, s, s, s, waitForCompletion);
 }
 
-void MecanumDrive::TurnToPoint(Pose2d currentPose, Point2d target, 
+void MecanumDrive::TurnToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                           QAngularSpeed turnSpeed,
                           bool waitForCompletion) {
-  QAngle angleToTurn = currentPose.AngleTo(target);
+  QAngle angleToTurn = ((Pose2d)currentPose).AngleTo({target.X(), target.Y()});
+  angleToTurn = UnitUtils::constrainTo180(angleToTurn - currentPose.Theta());
   TurnAngle(angleToTurn, turnSpeed, waitForCompletion);
 }
 
@@ -174,12 +175,12 @@ void MecanumDrive::DriveDistance(QLength target,
                             waitForCompletion);
 }
 
-void MecanumDrive::DriveToPoint(Pose2d currentPose, Point2d target, 
+void MecanumDrive::DriveToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                         QSpeed movementSpeed,
                         bool waitForCompletion) {
   QAngularSpeed s = UnitUtils::convertLinearSpeedToRotationalSpeed(movementSpeed, m_wheelDiameter, m_gearRatio);
   TurnToPoint(currentPose, target, s, true);
-  QLength d = currentPose.DistanceTo(target);
+  QLength d = ((Pose2d)currentPose).DistanceTo({target.X(), target.Y()});
   DriveDistance(d, movementSpeed, waitForCompletion);
 }
 

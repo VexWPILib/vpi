@@ -10,8 +10,7 @@ void SimpleWaypointFollower::FollowTrajectoryImpl(std::vector<VexGpsPose2d> iway
                                                 QSpeed s) {
   m_isMoving = true;
   for(auto wp : iwaypoints) {
-    Point2d target(wp.X(), wp.Y());
-    m_chassis.DriveToPoint(target, s, true);
+    m_chassis.DriveToPoint(wp, s, true);
   }
   m_isMoving = false;
 }

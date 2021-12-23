@@ -42,7 +42,7 @@ public:
 
   QAngle computeAngleToPoint(const Point2d &ipoint) {
     Point2d d = computeDiffs(ipoint);
-    return std::atan2(d.y.convert(meter), d.y.convert(meter)) * radian;
+    return std::atan2(d.x.convert(meter), d.y.convert(meter)) * radian;
   }
 };
 } // namespace vpi

@@ -54,6 +54,31 @@ class VexGpsPose2d {
   const QLength Y() const {return m_y;}
   const QAngle Theta() const {return m_theta;}
 
+  /**
+   * Returns the distance to the specified pose.
+   *
+   * @param end The end pose
+   *
+   * @return The QLength to this pose
+   */
+  QLength DistanceTo(const VexGpsPose2d& end) const {
+    Point2d pthis = Point2d(X(), Y());
+    Point2d pend = Point2d(end.X(), end.Y());
+    return pthis.computeDistanceToPoint(pend);
+  }
+
+  /**
+   * Returns the angle to the specified point
+   *
+   * @param p the point
+   *
+   * @return The QAngle to this point
+   */
+  QAngle AngleTo(const VexGpsPose2d& p) const {
+    QAngle a = std::atan2((p.X() - X()).convert(inch), (p.Y() - Y()).convert(inch)) * radian;
+    return UnitUtils::constrainTo180(a);
+  }
+
  private:
   QLength m_x = 0_m;
   QLength m_y = 0_m;

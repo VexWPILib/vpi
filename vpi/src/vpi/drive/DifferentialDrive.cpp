@@ -173,10 +173,11 @@ void DifferentialDrive::TurnAngle(QAngle target,
   TurnMotorsForDistanceAtSpeed(lrDistanceDiff, -1.0 * lrDistanceDiff, s, s, waitForCompletion);
 }
 
-void DifferentialDrive::TurnToPoint(Pose2d currentPose, Point2d target, 
+void DifferentialDrive::TurnToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                           QAngularSpeed turnSpeed,
                           bool waitForCompletion) {
   QAngle angleToTurn = currentPose.AngleTo(target);
+  angleToTurn = UnitUtils::constrainTo180(angleToTurn - currentPose.Theta());
   TurnAngle(angleToTurn, turnSpeed, waitForCompletion);
 }
 
@@ -186,7 +187,7 @@ void DifferentialDrive::DriveDistance(QLength target,
   TurnMotorsForDistanceAtSpeed(target, target, movementSpeed, movementSpeed, waitForCompletion);
 }
 
-void DifferentialDrive::DriveToPoint(Pose2d currentPose, Point2d target, 
+void DifferentialDrive::DriveToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                         QSpeed movementSpeed,
                         bool waitForCompletion) {
   QAngularSpeed s = UnitUtils::convertLinearSpeedToRotationalSpeed(movementSpeed, m_wheelDiameter, m_gearRatio);

@@ -156,7 +156,7 @@ class MecanumDrive : public RobotDriveBase {
                     QAngularSpeed movementSpeed,
                     bool waitForCompletion=true) override;
 
-  void TurnToPoint(Pose2d currentPose, Point2d target, 
+  void TurnToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                           QAngularSpeed turnSpeed,
                           bool waitForCompletion=true) override;
 
@@ -164,7 +164,7 @@ class MecanumDrive : public RobotDriveBase {
                     QSpeed movementSpeed,
                     bool waitForCompletion=true) override;
 
-  void DriveToPoint(Pose2d currentPose, Point2d target, 
+  void DriveToPoint(VexGpsPose2d currentPose, VexGpsPose2d target, 
                     QSpeed movementSpeed,
                     bool waitForCompletion=true) override;
 
