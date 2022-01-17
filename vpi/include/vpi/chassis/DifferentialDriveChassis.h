@@ -12,6 +12,7 @@
 #include "vpi/drive/DifferentialDrive.h"
 #include "vpi/hal/rotation/AbstractRotationSensor.h"
 #include "vpi/kinematics/DifferentialDriveOdometry.h"
+#include "vpi/log/Logger.h"
 
 namespace vpi {
 /**
@@ -307,6 +308,8 @@ namespace vpi {
 
       virtual bool IsMoving();
 
+      virtual void SetDebug(bool b) {m_debug = b;}
+      
     protected:
       vex::gearSetting m_gearSetting;
       QLength m_driveTrackWidth;
@@ -323,6 +326,7 @@ namespace vpi {
       std::vector<vex::gps> m_gps_sensors;
       double GPS_SENSOR_QUALITY_THRESHOLD = 95;
       bool m_odomEnabled = false;
+      bool m_debug = false;
 
       virtual const Pose2d& UpdateOdometry();
 

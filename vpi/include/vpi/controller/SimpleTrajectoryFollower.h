@@ -7,6 +7,7 @@
 #include "vpi/chassis/DifferentialDriveChassis.h"
 #include "vpi/kinematics/ChassisSpeeds.h"
 #include "vpi/kinematics/DifferentialDriveWheelSpeeds.h"
+#include "vpi/log/Logger.h"
 #include "vpi/trajectory/Trajectory.h"
 #include "vpi/units/QTime.h"
 
@@ -18,15 +19,18 @@ namespace vpi {
 class SimpleTrajectoryFollower {
   public:
     SimpleTrajectoryFollower(DifferentialDriveChassis &chassis) :
-        m_chassis(chassis) {}
+        m_chassis(chassis), m_debug(false) {}
 
     void FollowTrajectory(Trajectory t, bool waitForCompletion = true);
 
     bool IsMoving() {return m_isMoving;}
-    
+
+    virtual void SetDebug(bool b) {m_debug = b;}
+
   protected:
     DifferentialDriveChassis &m_chassis;
     bool m_isMoving;
+    bool m_debug;
 
     virtual void FollowTrajectoryImpl(Trajectory t);
     void FollowTrajectoryImpl() { FollowTrajectoryImpl(m_trajectory);}

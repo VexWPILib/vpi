@@ -11,6 +11,18 @@ void SimpleWaypointFollower::FollowTrajectoryImpl(std::vector<VexGpsPose2d> iway
   m_isMoving = true;
   for(auto wp : iwaypoints) {
     m_chassis.DriveToPoint(wp, s, true);
+    if(m_debug) {
+      VexGpsPose2d curStateVex = m_chassis.GetPose();
+
+      logger.log(Logger::LogLevel::DEBUG, 
+            "SimpleWaypointFollower::FollowTrajectory - "
+            "\n\tCurrent Pose : (%d, %d) H: %d"
+            "\n\tTarget Pose  : (%d, %d)",
+                (int)curStateVex.X().convert(inch),
+                (int)curStateVex.Y().convert(inch),
+                (int)curStateVex.Theta().convert(degree),
+                (int)wp.X().convert(inch), (int)wp.Y().convert(inch));
+    }
   }
   m_isMoving = false;
 }
