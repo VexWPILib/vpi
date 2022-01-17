@@ -22,7 +22,7 @@ class RamseteTrajectoryFollower {
     RamseteTrajectoryFollower(DifferentialDriveChassis &chassis,
                               Pose2d tolerance,
                               double b=2.0, double zeta=0.7) :
-        m_chassis(chassis), m_rc(b, zeta) {
+        m_chassis(chassis), m_rc(b, zeta), m_debug(false) {
       m_rc.SetTolerance(tolerance);
       if(!m_chassis.IsOdomEnabled()) {
         m_chassis.EnableOdom();
@@ -32,11 +32,13 @@ class RamseteTrajectoryFollower {
     void FollowTrajectory(Trajectory t, bool waitForCompletion=true);
 
     bool IsMoving() {return m_isMoving;}
+    virtual void SetDebug(bool b) {m_debug = b;}
 
   protected:
     DifferentialDriveChassis &m_chassis;
     RamseteController m_rc;
     bool m_isMoving;
+    bool m_debug;
 
     virtual void FollowTrajectoryImpl(Trajectory t);
     void FollowTrajectoryImpl() { FollowTrajectoryImpl(m_trajectory);}

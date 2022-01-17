@@ -71,6 +71,7 @@ namespace vpi {
 
   const Pose2d& DifferentialDriveChassis::UpdateOdometry() {
     if(m_gps_sensors.size() > 0) {
+      int i = 0;
       for(auto gps : m_gps_sensors) {
         if(gps.quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
           QAngle h = gps.heading(rotationUnits::deg) * degree;
@@ -86,8 +87,13 @@ namespace vpi {
           if(m_strafeSensor != NULL) {
             m_strafeSensor->Reset();
           }
+          if(m_debug){
+            logger.log(Logger::LogLevel::DEBUG, 
+            "DifferentialDriveChassis::UpdateOdometry - using position from GPS %d",i);
+          }
           return m_odometry.GetPose();
         }
+        i++;
       }
     }
 
@@ -98,11 +104,19 @@ namespace vpi {
     QLength rd = UnitUtils::convertRotationToDistance(ra, m_odomWheelDiameter, m_gearRatio);
 
     if(m_inertials.size() == 0) {
+      if(m_debug){
+        logger.log(Logger::LogLevel::DEBUG, 
+        "DifferentialDriveChassis::UpdateOdometry - using position from rotation sensors");
+      }
       return m_odometry.Update(ld, rd);
     } else {
       double headingAccumulator = 0;
       for (auto i : m_inertials) {
         headingAccumulator = UnitUtils::constrainTo180((headingAccumulator + i.heading(rotationUnits::deg)) * degree).convert(degree);
+      }
+      if(m_debug){
+        logger.log(Logger::LogLevel::DEBUG, 
+        "DifferentialDriveChassis::UpdateOdometry - using position from rotation sensors and IMU");
       }
       return m_odometry.Update(headingAccumulator / (double)m_inertials.size() * radian, ld, rd);
     }

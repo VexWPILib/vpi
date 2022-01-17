@@ -8,6 +8,7 @@
 #include "vpi/geometry/Point2d.h"
 #include "vpi/geometry/Pose2d.h"
 #include "vpi/geometry/VexGpsPose2d.h"
+#include "vpi/log/Logger.h"
 
 namespace vpi {
   /**
@@ -17,15 +18,17 @@ namespace vpi {
 class SimpleWaypointFollower {
   public:
     SimpleWaypointFollower(DifferentialDriveChassis &chassis) :
-        m_chassis(chassis), m_isMoving(false) {}
+        m_chassis(chassis), m_isMoving(false), m_debug(false) {}
 
     void FollowTrajectory(std::vector<VexGpsPose2d> iwaypoints, QSpeed s, bool waitForCompletion=true);
     void FollowTrajectory(std::initializer_list<VexGpsPose2d> iwaypoints, QSpeed s, bool waitForCompletion=true);
     virtual bool IsMoving() { return m_isMoving;}
+    virtual void SetDebug(bool b) {m_debug = b;}
 
   protected:
     DifferentialDriveChassis &m_chassis;
     bool m_isMoving;
+    bool m_debug;
 
     virtual void FollowTrajectoryImpl(std::vector<VexGpsPose2d> iwaypoints, QSpeed s);
     void FollowTrajectoryImpl() { FollowTrajectoryImpl(m_waypoints, m_speed);}
