@@ -74,10 +74,7 @@ namespace vpi {
     for(auto gps : m_gps_sensors) {
       VexGpsPose2d gpsPose = gps.GetValue();
       if(gpsPose.Quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
-        m_odometry.ResetPosition(gpsPose);
-        // When calling m_odometry.ResetPosition, you must also
-        // reset the sensors feeding into it
-        UnsafeOdomReset();
+        ResetPosition(gpsPose);
         if(m_debug){
           logger.log(Logger::LogLevel::DEBUG, 
           "DifferentialDriveChassis::GetFirstQualityGPS - using position from GPS %d",i);
@@ -109,10 +106,7 @@ namespace vpi {
       "DifferentialDriveChassis::GetHighestQualityGPS - using position from GPS %d",j);
     }
     if(i>0) {
-      m_odometry.ResetPosition(bestGpsPose);
-      // When calling m_odometry.ResetPosition, you must also
-      // reset the sensors feeding into it
-      UnsafeOdomReset();
+      ResetPosition(bestGpsPose);
       return true;
     } else {
       return false;
@@ -141,10 +135,7 @@ namespace vpi {
     }
     if(i>0) {
       VexGpsPose2d wavgPose = VexGpsPose2d::WeightedAverage(v_poses);
-      m_odometry.ResetPosition(wavgPose);
-      // When calling m_odometry.ResetPosition, you must also
-      // reset the sensors feeding into it
-      UnsafeOdomReset();
+      ResetPosition(wavgPose);
       return true;
     } else {
       return false;
