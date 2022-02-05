@@ -23,7 +23,7 @@ namespace vpi {
       }
 
       QAngle GetValue() override {
-        m_timestamp = 1000 * (uint32_t)Brain.Timer.value();  // Milliseconds? TODO
+        m_timestamp = 1000 * (uint32_t)Brain.Timer.value();
         return m_motorgroup.rotation(vex::rotationUnits::deg) * degree;
       }
 

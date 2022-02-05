@@ -69,31 +69,102 @@ namespace vpi {
     return 0;
   }
 
+  bool DifferentialDriveChassis::SetFirstQualityGPS() {
+    int i = 0;
+    for(auto gps : m_gps_sensors) {
+      VexGpsPose2d gpsPose = gps.GetValue();
+      if(gpsPose.Quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
+        m_odometry.ResetPosition(gpsPose);
+        // When calling m_odometry.ResetPosition, you must also
+        // reset the sensors feeding into it
+        UnsafeOdomReset();
+        if(m_debug){
+          logger.log(Logger::LogLevel::DEBUG, 
+          "DifferentialDriveChassis::GetFirstQualityGPS - using position from GPS %d",i);
+        }
+        return true;
+      }
+      i++;
+    }
+    return false;
+  }
+
+  bool DifferentialDriveChassis::SetHighestQualityGPS() {
+    int i = 0;
+    int j = 0;
+    double cur_quality = -99;
+    VexGpsPose2d bestGpsPose(-99 * meter, -99 * meter, 0_deg, 0, 0_ms);
+    for(auto gps : m_gps_sensors) {
+      VexGpsPose2d gpsPose = gps.GetValue();
+      double q = gpsPose.Quality();
+      if(q >= GPS_SENSOR_QUALITY_THRESHOLD && q > cur_quality) {
+        cur_quality = q;
+        bestGpsPose = VexGpsPose2d(gpsPose.X(), gpsPose.Y(), gpsPose.Theta(), gpsPose.Quality(), gpsPose.Timestamp());
+        i++;
+      }
+      j++;
+    }
+    if(m_debug){
+      logger.log(Logger::LogLevel::DEBUG, 
+      "DifferentialDriveChassis::GetHighestQualityGPS - using position from GPS %d",j);
+    }
+    if(i>0) {
+      m_odometry.ResetPosition(bestGpsPose);
+      // When calling m_odometry.ResetPosition, you must also
+      // reset the sensors feeding into it
+      UnsafeOdomReset();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool DifferentialDriveChassis::SetWeightedAverageGPS() {
+    int i = 0;
+    int j = 0;
+
+    VexGpsPose2d bestGpsPose(-99 * meter, -99 * meter, 0_deg, 0, 0_ms);
+    std::vector<VexGpsPose2d> v_poses;
+    for(auto gps : m_gps_sensors) {
+      VexGpsPose2d gpsPose = gps.GetValue();
+      double q = gpsPose.Quality();
+      if(q >= GPS_SENSOR_QUALITY_THRESHOLD) {
+        v_poses.emplace_back(gpsPose);
+
+        i++;
+      }
+      j++;
+    }
+    if(m_debug){
+      logger.log(Logger::LogLevel::DEBUG, 
+      "DifferentialDriveChassis::SetWeightedAverageGPS - using position from %d GPS sensor readings",i);
+    }
+    if(i>0) {
+      VexGpsPose2d wavgPose = VexGpsPose2d::WeightedAverage(v_poses);
+      m_odometry.ResetPosition(wavgPose);
+      // When calling m_odometry.ResetPosition, you must also
+      // reset the sensors feeding into it
+      UnsafeOdomReset();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   const Pose2d& DifferentialDriveChassis::UpdateOdometry() {
     if(m_gps_sensors.size() > 0) {
-      int i = 0;
-      for(auto gps : m_gps_sensors) {
-        if(gps.quality() > GPS_SENSOR_QUALITY_THRESHOLD) {
-          QAngle h = gps.heading(rotationUnits::deg) * degree;
-          QLength x = gps.xPosition(distanceUnits::in) * inch;
-          QLength y = gps.yPosition(distanceUnits::in) * inch;
-          // Pose2d gpsPose(x,y,h);
-          VexGpsPose2d gpsPose(x,y,h);
-          m_odometry.ResetPosition(gpsPose);
-          // When calling m_odometry.ResetPosition, you must also
-          // reset the sensors feeding into it
-          m_leftSensor->Reset();
-          m_rightSensor->Reset();
-          if(m_strafeSensor != NULL) {
-            m_strafeSensor->Reset();
-          }
-          if(m_debug){
-            logger.log(Logger::LogLevel::DEBUG, 
-            "DifferentialDriveChassis::UpdateOdometry - using position from GPS %d",i);
-          }
+      if(m_gpsHandler == MultipleGpsHandler::FIRST_ABOVE_QUALITY) {
+        if(SetFirstQualityGPS()) {
           return m_odometry.GetPose();
         }
-        i++;
+      } else if(m_gpsHandler == MultipleGpsHandler::HIGHEST_QUALITY) {
+        if(SetHighestQualityGPS()) {
+          return m_odometry.GetPose();
+        }
+      } else if(m_gpsHandler == MultipleGpsHandler::QUALITY_WEIGHTEDAVERAGE) {
+        if(SetWeightedAverageGPS()) {
+          return m_odometry.GetPose();
+        }
       }
     }
 
@@ -111,14 +182,28 @@ namespace vpi {
       return m_odometry.Update(ld, rd);
     } else {
       double headingAccumulator = 0;
+      bool bCloseTo180 = false;
+      int j = 0;
       for (auto i : m_inertials) {
-        headingAccumulator = UnitUtils::constrainTo180((headingAccumulator + i.heading(rotationUnits::deg)) * degree).convert(degree);
+        if(j == 0) {
+          if(fabs(i.heading(rotationUnits::deg)) > 135) {
+            bCloseTo180 = true;
+          }
+        }
+        if(bCloseTo180) {
+          // Use 0:360 range
+          headingAccumulator = headingAccumulator + UnitUtils::constrainTo360(i.heading(rotationUnits::deg) * degree).convert(degree);
+        } else {
+          // Use -180:180 range
+          headingAccumulator = headingAccumulator + UnitUtils::constrainTo180(i.heading(rotationUnits::deg) * degree).convert(degree);
+        }
+        j++;
       }
       if(m_debug){
         logger.log(Logger::LogLevel::DEBUG, 
         "DifferentialDriveChassis::UpdateOdometry - using position from rotation sensors and IMU");
       }
-      return m_odometry.Update(headingAccumulator / (double)m_inertials.size() * radian, ld, rd);
+      return m_odometry.Update(headingAccumulator / (double)m_inertials.size() * degree, ld, rd);
     }
   }
 

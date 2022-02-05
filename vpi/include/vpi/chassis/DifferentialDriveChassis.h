@@ -11,8 +11,10 @@
 #include "vex.h"
 #include "vpi/drive/DifferentialDrive.h"
 #include "vpi/hal/rotation/AbstractRotationSensor.h"
+#include "vpi/hal/gps/VexGpsPose2dGPS.h"
 #include "vpi/kinematics/DifferentialDriveOdometry.h"
 #include "vpi/log/Logger.h"
+#include "vpi/units/UnitUtils.h"
 
 namespace vpi {
 /**
@@ -89,6 +91,12 @@ namespace vpi {
  */
   class DifferentialDriveChassis {
     public:
+      enum MultipleGpsHandler {
+        FIRST_ABOVE_QUALITY,
+        HIGHEST_QUALITY,
+        QUALITY_WEIGHTEDAVERAGE
+      };
+
       /**
       * Construct a DifferentialDrive.
       *
@@ -163,6 +171,12 @@ namespace vpi {
 
       virtual void ResetPosition(const VexGpsPose2d& pose, const Rotation2d& gyroAngle) {
         m_odometry.ResetPosition(pose, gyroAngle);
+        SafeOdomReset();
+      }
+
+      virtual void ResetPosition(const VexGpsPose2d& pose) {
+        m_odometry.ResetPosition(pose);
+        SafeOdomReset();
       }
 
       /**
@@ -254,6 +268,11 @@ namespace vpi {
       * @endcode
       */
       void AddGpsSensor(vex::gps &s) {
+        VexGpsPose2dGPS v(s);
+        AddGpsSensor(v);
+      }
+
+      void AddGpsSensor(VexGpsPose2dGPS &s) {
         m_gps_sensors.emplace_back(s);
       }
 
@@ -309,7 +328,15 @@ namespace vpi {
       virtual bool IsMoving();
 
       virtual void SetDebug(bool b) {m_debug = b;}
+
+      virtual void SetGpsQualityThreshold(double d) {
+        GPS_SENSOR_QUALITY_THRESHOLD = d;
+      }
       
+      virtual void SetMultipleGPSHandler(MultipleGpsHandler g) {
+        m_gpsHandler = g;
+      }
+
     protected:
       vex::gearSetting m_gearSetting;
       QLength m_driveTrackWidth;
@@ -323,15 +350,38 @@ namespace vpi {
       AbstractRotationSensor *m_rightSensor = NULL;
       AbstractRotationSensor *m_strafeSensor = NULL;
       std::vector<vex::inertial> m_inertials;
-      std::vector<vex::gps> m_gps_sensors;
-      double GPS_SENSOR_QUALITY_THRESHOLD = 95;
+      std::vector<VexGpsPose2dGPS> m_gps_sensors;
+      double GPS_SENSOR_QUALITY_THRESHOLD = 96;
       bool m_odomEnabled = false;
       bool m_debug = false;
+      MultipleGpsHandler m_gpsHandler = MultipleGpsHandler::FIRST_ABOVE_QUALITY;
 
       virtual const Pose2d& UpdateOdometry();
+      virtual bool SetFirstQualityGPS();
+      virtual bool SetHighestQualityGPS();
+      virtual bool SetWeightedAverageGPS();
 
     private:
       vex::task *m_odomTask = NULL;
       static int _trampoline(void *p_this);
+
+      void SafeOdomReset() {
+        bool bWasOdomEnabled = IsOdomEnabled();
+        if(bWasOdomEnabled) {
+          DisableOdom();
+        }
+        UnsafeOdomReset();
+        if(bWasOdomEnabled) {
+          EnableOdom();
+        }
+      }
+
+      void UnsafeOdomReset() {
+        m_leftSensor->Reset();
+        m_rightSensor->Reset();
+        if(m_strafeSensor != NULL) {
+          m_strafeSensor->Reset();
+        }
+      }
   };
 } // end vpi

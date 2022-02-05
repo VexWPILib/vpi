@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "vpi/hal/AbstractSensor.h"
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QAngularSpeed.h"
 
@@ -17,7 +18,7 @@ namespace vpi {
  * * 3-wire potentiometer
  * * V5 Rotation Sensor
  */
-  class AbstractRotationSensor {
+  class AbstractRotationSensor : public AbstractSensor {
     public:
       /**
       * Virtual method for getting the sensor's rotation value
@@ -34,12 +35,5 @@ namespace vpi {
       */
       virtual QAngularSpeed GetAngularSpeed() = 0;
 
-      QTime GetReadingTimestamp() 
-      {
-        return m_timestamp * millisecond;
-      }
-
-    protected:
-      uint32_t m_timestamp;
   };
 } // end vpi

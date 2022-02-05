@@ -13,7 +13,7 @@ namespace vpi {
       V5RotationSensor(vex::rotation r) : m_r(r) {}
 
       QAngle GetValue() override {
-        m_timestamp = m_r.timestamp(); // Milliseconds? TODO
+        m_timestamp = m_r.timestamp();
         return (m_r.angle(vex::rotationUnits::deg) * degree);
       }
 

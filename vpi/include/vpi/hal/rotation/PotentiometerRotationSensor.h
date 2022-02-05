@@ -13,7 +13,7 @@ namespace vpi {
       PotentiometerRotationSensor(vex::pot p) : m_pot(p) {}
 
       QAngle GetValue() override {
-        m_timestamp = 1000 * (uint32_t)Brain.Timer.value();  // Milliseconds? TODO
+        m_timestamp = 1000 * (uint32_t)Brain.Timer.value();
         return (m_pot.angle(vex::rotationUnits::deg) * degree - m_lastReset);
       }
 
