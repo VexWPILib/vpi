@@ -10,12 +10,17 @@
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QAngularAcceleration.h"
 #include "vpi/units/QAngularSpeed.h"
+#include "vpi/units/QFrequency.h"
 #include "vpi/units/QLength.h"
 #include "vpi/units/QSpeed.h"
 
 namespace vpi {
   class UnitUtils {
     public:
+      static QTime convertFrequencyToDelayTime(QFrequency f) {
+        return second * 1.0 / f.convert(Hz);
+      }
+
       static QAngularSpeed convertLinearSpeedToRotationalSpeed(QSpeed linear, QLength diameter, double gearRatio = 1.0) {
         return (linear * (360_deg / (diameter * 1_pi))) / gearRatio;
       }

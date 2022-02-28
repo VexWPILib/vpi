@@ -23,7 +23,7 @@ namespace vpi {
       }
 
       QAngle GetValue() override {
-        m_timestamp = m_motor.timestamp();  // Milliseconds? TODO
+        m_timestamp = m_motor.timestamp();
         
         return m_motor.rotation(vex::rotationUnits::deg) * m_gearMultiplier * degree;
       }
