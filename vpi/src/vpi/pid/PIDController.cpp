@@ -76,19 +76,19 @@ double PIDController::GetSetpoint() const {
 }
 
 bool PIDController::AtSetpoint() const {
-  double positionError;
+  double errorAmount;
   if (m_continuous) {
     double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
-    positionError =
+    errorAmount =
         VpiUtils::clip(m_setpoint - m_measurement, -errorBound, errorBound);
   } else {
-    positionError = m_setpoint - m_measurement;
+    errorAmount = m_setpoint - m_measurement;
   }
 
-  double velocityError = (positionError - m_prevError) / m_period.convert(second);
+  double errorDeltaTime = (errorAmount - m_prevError) / m_period.convert(second);
 
-  return std::abs(positionError) < m_positionTolerance &&
-         std::abs(velocityError) < m_velocityTolerance;
+  return std::abs(errorAmount) < m_Tolerance &&
+         std::abs(errorDeltaTime) < m_ToleranceDeltaTime;
 }
 
 void PIDController::EnableContinuousInput(double minimumInput,
@@ -118,45 +118,45 @@ void PIDController::SetIntegratorRange(double minimumIntegral,
   m_mutex.unlock();
 }
 
-void PIDController::SetTolerance(double positionTolerance,
-                                 double velocityTolerance) {
+void PIDController::SetTolerance(double tolerance,
+                                 double toleranceDeltaTime) {
   m_mutex.lock();
-  m_positionTolerance = positionTolerance;
-  m_velocityTolerance = velocityTolerance;
+  m_Tolerance = tolerance;
+  m_ToleranceDeltaTime = toleranceDeltaTime;
   m_mutex.unlock();
 }
 
-double PIDController::GetPositionError() const {
-  return m_positionError;
+double PIDController::GetError() const {
+  return m_Error;
 }
 
-double PIDController::GetVelocityError() const {
-  return m_velocityError;
+double PIDController::GetErrorDeltaTime() const {
+  return m_ErrorDeltaTime;
 }
 
 double PIDController::Calculate(double measurement) {
   m_mutex.lock();
   double prev_measurement = m_measurement;
   m_measurement = measurement;
-  m_prevError = m_positionError;
+  m_prevError = m_Error;
 
   if (m_continuous) {
     double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
-    m_positionError =
+    m_Error =
         VpiUtils::InputModulus(m_setpoint - m_measurement, -errorBound, errorBound);
   } else {
-    m_positionError = m_setpoint - measurement;
+    m_Error = m_setpoint - measurement;
   }
 
-  m_velocityError = (m_positionError - m_prevError) / m_period.convert(second);
+  m_ErrorDeltaTime = (m_Error - m_prevError) / m_period.convert(second);
 
   if (m_P.Ki != 0) {
     m_totalError =
-        VpiUtils::clip(m_totalError + m_positionError * m_period.convert(second),
+        VpiUtils::clip(m_totalError + m_Error * m_period.convert(second),
                    m_minimumIntegral / m_P.Ki, m_maximumIntegral / m_P.Ki);
   }
 
-  double retval = m_P.Kp * m_positionError + m_P.Ki * m_totalError + m_P.Kd * m_velocityError + 
+  double retval = m_P.Kp * m_Error + m_P.Ki * m_totalError + m_P.Kd * m_ErrorDeltaTime + 
         m_P.Kf * (prev_measurement - measurement);
   m_mutex.unlock();
   return retval;
@@ -214,6 +214,7 @@ void PIDController::ControlLoop()
 {
   while(!AtSetpoint() && CheckEnabled()) {
     double m = m_measurementSource();
+    m = Calculate(m);
     m_useOutput(m);
     this_thread::sleep_for(m_period.convert(millisecond));
   }

@@ -45,7 +45,7 @@ void DifferentialDriveChassisPID::Reset()
   m_targetAngularSpeed = NULL;
   m_desiredWheelSpeeds = NULL;
   m_mutex.unlock();
-  m_drivetrain.Stop();
+  m_drivetrain->Stop();
 }
 
 QLength DifferentialDriveChassisPID::DistanceToTarget() {
@@ -119,7 +119,7 @@ void DifferentialDriveChassisPID::ConsumeTurnPID(double a)
   m_desiredWheelSpeeds->right = -1.0 * s;
   m_mutex.unlock();
 
-  m_drivetrain.DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
+  m_drivetrain->DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
 }
 
 void DifferentialDriveChassisPID::DriveDistance(QLength target, 
@@ -162,7 +162,7 @@ void DifferentialDriveChassisPID::ConsumeDistancePID(double v)
   m_desiredWheelSpeeds->Normalize(*m_targetSpeed);
   m_mutex.unlock();
 
-  m_drivetrain.DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
+  m_drivetrain->DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
 }
 
 void DifferentialDriveChassisPID::ConsumeAnglePID(double a)
@@ -173,7 +173,7 @@ void DifferentialDriveChassisPID::ConsumeAnglePID(double a)
   m_desiredWheelSpeeds->Normalize(*m_targetSpeed);
   m_mutex.unlock();
 
-  m_drivetrain.DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
+  m_drivetrain->DirectWheelSpeedDrive(*m_desiredWheelSpeeds);
 }
 
 void DifferentialDriveChassisPID::DriveToPoint(VexGpsPose2d target, 

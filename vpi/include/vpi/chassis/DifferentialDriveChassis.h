@@ -153,7 +153,7 @@ namespace vpi {
       * @param squareInputs If set, decreases the input sensitivity at low speeds.
       */
       void ArcadeDrive(double xSpeed, double zRotation, bool squareInputs = false) {
-        m_drivetrain.ArcadeDrive(xSpeed, zRotation, squareInputs);
+        m_drivetrain->ArcadeDrive(xSpeed, zRotation, squareInputs);
       }
 
       /**
@@ -166,7 +166,7 @@ namespace vpi {
       * @param squareInputs If set, decreases the input sensitivity at low speeds.
       */
       void TankDrive(double leftSpeed, double rightSpeed, bool squareInputs = false) {
-        m_drivetrain.TankDrive(leftSpeed, rightSpeed, squareInputs);
+        m_drivetrain->TankDrive(leftSpeed, rightSpeed, squareInputs);
       }
 
       virtual void ResetPosition(const VexGpsPose2d& pose, const Rotation2d& gyroAngle) {
@@ -295,19 +295,19 @@ namespace vpi {
       virtual void TurnAngle(QAngle target, 
                          QAngularSpeed turnSpeed,
                          bool waitForCompletion=true) {
-        m_drivetrain.TurnAngle(target, turnSpeed, waitForCompletion);
+        m_drivetrain->TurnAngle(target, turnSpeed, waitForCompletion);
       }
 
       virtual void TurnToPoint(VexGpsPose2d target, 
                        QAngularSpeed turnSpeed,
                        bool waitForCompletion=true) {
-        m_drivetrain.TurnToPoint(m_odometry.GetPose(), target, turnSpeed, waitForCompletion);
+        m_drivetrain->TurnToPoint(m_odometry.GetPose(), target, turnSpeed, waitForCompletion);
       }
 
       virtual void DriveDistance(QLength target, 
                          QSpeed movementSpeed,
                          bool waitForCompletion=true) {
-        m_drivetrain.DriveDistance(target, movementSpeed, waitForCompletion);
+        m_drivetrain->DriveDistance(target, movementSpeed, waitForCompletion);
       }
 
       virtual void DriveToPoint(VexGpsPose2d target, 
@@ -316,13 +316,13 @@ namespace vpi {
         QAngularSpeed turnSpeed = UnitUtils::convertLinearSpeedToRotationalSpeed(movementSpeed,
                                                                                 m_driveWheelDiameter,
                                                                                 m_gearRatio);
-        m_drivetrain.TurnToPoint(m_odometry.GetPose(), target, turnSpeed, true);
+        m_drivetrain->TurnToPoint(m_odometry.GetPose(), target, turnSpeed, true);
         Pose2d postTurnPose = m_odometry.GetPose();  // Turn may have changed our position a bit
-        m_drivetrain.DriveDistance(postTurnPose.DistanceTo(target), movementSpeed, waitForCompletion);
+        m_drivetrain->DriveDistance(postTurnPose.DistanceTo(target), movementSpeed, waitForCompletion);
       }
 
       virtual void DriveChassisSpeeds(ChassisSpeeds cs) {
-        m_drivetrain.DriveChassisSpeeds(cs);
+        m_drivetrain->DriveChassisSpeeds(cs);
       }
 
       virtual bool IsMoving();
@@ -337,6 +337,10 @@ namespace vpi {
         m_gpsHandler = g;
       }
 
+      virtual ChassisSpeeds GetChassisSpeed() {
+        return m_drivetrain->GetChassisSpeed();
+      }
+
     protected:
       vex::gearSetting m_gearSetting;
       QLength m_driveTrackWidth;
@@ -344,7 +348,7 @@ namespace vpi {
       double m_gearRatio;
       QLength m_odomTrackWidth;
       QLength m_odomWheelDiameter;
-      DifferentialDrive m_drivetrain;
+      DifferentialDrive *m_drivetrain = NULL;
       DifferentialDriveOdometry m_odometry;
       AbstractRotationSensor *m_leftSensor = NULL;
       AbstractRotationSensor *m_rightSensor = NULL;

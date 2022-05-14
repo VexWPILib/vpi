@@ -18,12 +18,12 @@ namespace vpi {
                   m_gearRatio(gearRatio),
                   m_odomTrackWidth(driveTrackWidth),
                   m_odomWheelDiameter(driveWheelDiameter),
-                  m_drivetrain(driveTrackWidth, driveWheelDiameter, 
-                                      leftMotorGroup, rightMotorGroup),
                   m_odometry(driveTrackWidth, driveWheelDiameter, 0 * degree, gearRatio)
                   {
-    m_drivetrain.SetBrakeType(brake);
-    m_drivetrain.SetGearRatio(gearRatio);
+    m_drivetrain = new DifferentialDrive(driveTrackWidth, driveWheelDiameter, 
+                        leftMotorGroup, rightMotorGroup),
+    m_drivetrain->SetBrakeType(brake);
+    m_drivetrain->SetGearRatio(gearRatio);
     m_leftSensor = new MotorGroupRotationSensor(leftMotorGroup, gs);
     m_rightSensor = new MotorGroupRotationSensor(rightMotorGroup, gs);
   }
@@ -199,7 +199,7 @@ namespace vpi {
   }
 
   bool DifferentialDriveChassis::IsMoving() {
-    return m_drivetrain.IsMoving();
+    return m_drivetrain->IsMoving();
   }
 
 } // end vpi

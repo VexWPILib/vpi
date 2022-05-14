@@ -191,6 +191,8 @@ class DifferentialDrive : public RobotDriveBase {
 
   bool IsMoving() override;
 
+  ChassisSpeeds GetChassisSpeed();
+
  protected:
   vex::motor_group* m_leftMotor;
   vex::motor_group* m_rightMotor;
