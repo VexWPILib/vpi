@@ -42,7 +42,7 @@ struct PIDFParameters {
 };
 
 /**
- * Implements a PID control loop.
+ * Implements a PID control loop for position.
  *
  * To understand what a PID control loop is, read:
  *
@@ -199,7 +199,7 @@ class PIDController {
    *
    * This will return false until at least one input value has been computed.
    */
-  bool AtSetpoint() const;
+  virtual bool AtSetpoint() const;
 
   /**
    * Enables continuous input.
@@ -241,18 +241,18 @@ class PIDController {
    * @param velocityTolerance Velocity error which is tolerable.
    */
   void SetTolerance(
-      double positionTolerance,
-      double velocityTolerance = std::numeric_limits<double>::infinity());
+      double tolerance,
+      double toleranceDeltaTime = std::numeric_limits<double>::infinity());
 
   /**
    * Returns the difference between the setpoint and the measurement.
    */
-  double GetPositionError() const;
+  double GetError() const;
 
   /**
    * Returns the velocity error.
    */
-  double GetVelocityError() const;
+  double GetErrorDeltaTime() const;
 
   /**
    * Returns the next output of the PID controller.
@@ -298,8 +298,8 @@ class PIDController {
   bool m_continuous = false;
 
   // The error at the time of the most recent call to Calculate()
-  double m_positionError = 0;
-  double m_velocityError = 0;
+  double m_Error = 0;
+  double m_ErrorDeltaTime = 0;
 
   // The error at the time of the second-most-recent call to Calculate() (used
   // to compute velocity)
@@ -309,8 +309,8 @@ class PIDController {
   double m_totalError = 0;
 
   // The error that is considered at setpoint.
-  double m_positionTolerance = 0.05;
-  double m_velocityTolerance = std::numeric_limits<double>::infinity();
+  double m_Tolerance = 0.05;
+  double m_ToleranceDeltaTime = std::numeric_limits<double>::infinity();
 
   double m_setpoint = 0;
   double m_measurement = 0;

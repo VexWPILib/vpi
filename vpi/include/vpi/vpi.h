@@ -22,6 +22,7 @@ extern brain Brain;
 
 #include "vpi/chassis/DifferentialDriveChassis.h"
 #include "vpi/chassis/DifferentialDriveChassisPID.h"
+#include "vpi/chassis/DifferentialDriveChassisPTO.h"
 #include "vpi/controller/SimpleWaypointFollower.h"
 #include "vpi/controller/SimpleTrajectoryFollower.h"
 #include "vpi/controller/RamseteController.h"
@@ -58,6 +59,7 @@ extern brain Brain;
 #include "vpi/kinematics/MecanumDriveWheelSpeeds.h"
 #include "vpi/log/Logger.h"
 #include "vpi/pid/PIDController.h"
+#include "vpi/pid/PIDVelocityController.h"
 #include "vpi/spline/CubicHermiteSpline.h"
 #include "vpi/spline/QuinticHermiteSpline.h"
 #include "vpi/spline/Spline.h"

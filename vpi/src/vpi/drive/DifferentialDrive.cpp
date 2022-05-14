@@ -200,3 +200,13 @@ bool DifferentialDrive::IsMoving()
 {
   return m_leftMotor->isSpinning() || m_rightMotor->isSpinning();
 }
+
+ChassisSpeeds DifferentialDrive::GetChassisSpeed()
+{
+  QAngularSpeed lmRpm = rpm * m_leftMotor->velocity(velocityUnits::rpm);
+  QAngularSpeed rmRpm = rpm * m_rightMotor->velocity(velocityUnits::rpm);
+  DifferentialDriveWheelSpeeds ws;
+  ws.left = UnitUtils::convertRotationalSpeedToLinearSpeed(lmRpm, m_wheelDiameter, m_gearRatio);
+  ws.right = UnitUtils::convertRotationalSpeedToLinearSpeed(rmRpm, m_wheelDiameter, m_gearRatio);
+  return m_kinematics.ToChassisSpeeds(ws);
+}
