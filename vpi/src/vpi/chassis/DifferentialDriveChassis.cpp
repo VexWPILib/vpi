@@ -45,6 +45,7 @@ namespace vpi {
     }
     if(m_odomTask != NULL) {
       m_odomTask->stop();
+      m_odomTask = NULL;
     }
     m_odomEnabled = true;
     // Reset everything before starting the odometry task

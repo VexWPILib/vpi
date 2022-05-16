@@ -23,6 +23,7 @@ extern brain Brain;
 #include "vpi/chassis/DifferentialDriveChassis.h"
 #include "vpi/chassis/DifferentialDriveChassisPID.h"
 #include "vpi/chassis/DifferentialDriveChassisPTO.h"
+#include "vpi/controller/DifferentialDrivePurePursuitFollower.h"
 #include "vpi/controller/SimpleWaypointFollower.h"
 #include "vpi/controller/SimpleTrajectoryFollower.h"
 #include "vpi/controller/RamseteController.h"

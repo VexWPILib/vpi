@@ -12,6 +12,7 @@
 #include "vpi/kinematics/DifferentialDriveWheelSpeeds.h"
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QLength.h"
+#include "vpi/units/UnitUtils.h"
 
 namespace vpi {
 /**
@@ -114,6 +115,10 @@ class DifferentialDriveKinematics {
 
     QAngle LinearDistanceToMotorRotations(QLength d) {
       return UnitUtils::convertLinearToRotational(d, m_wheelDiameter, m_gearRatio);
+    }
+
+    QSpeed ConvertRotationalSpeedToLinearSpeed(QAngularSpeed r) {
+      return UnitUtils::convertRotationalSpeedToLinearSpeed(r, m_wheelDiameter, m_gearRatio);
     }
 
   protected:
