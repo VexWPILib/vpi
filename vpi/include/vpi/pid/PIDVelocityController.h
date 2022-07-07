@@ -53,7 +53,7 @@ class PIDVelocityController : public PIDController {
   PIDVelocityController(PIDVelocityController&&) = default;
   PIDVelocityController& operator=(PIDVelocityController&&) = default;
 
-  bool AtSetpoint() override {return false;}
+  virtual bool AtSetpoint() override {return false;}
   virtual void DisableContinuousInput() override {}
   virtual void EnableContinuousInput(double minimumInput, double maximumInput) override {}
 };

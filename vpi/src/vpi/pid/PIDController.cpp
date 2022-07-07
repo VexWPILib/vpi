@@ -75,7 +75,7 @@ double PIDController::GetSetpoint() const {
   return m_setpoint;
 }
 
-bool PIDController::AtSetpoint() const {
+bool PIDController::AtSetpoint() {
   double errorAmount;
   if (m_continuous) {
     double errorBound = (m_maximumInput - m_minimumInput) / 2.0;

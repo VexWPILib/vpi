@@ -8,6 +8,7 @@
 
 #include "vex.h"
 #include "vpi/pid/PIDVelocityController.h"
+#include "vpi/units/QAngularSpeed.h"
 #include "vpi/units/UnitUtils.h"
 
 namespace vpi {
@@ -80,6 +81,13 @@ namespace vpi {
         return false;
       }
 
+      virtual QAngularSpeed GetCurrentAngularSpeed() {
+        m_mutex.lock();
+        QAngularSpeed curRpm = m_mg.velocity(vex::velocityUnits::rpm) * m_gearRatio * rpm;
+        m_mutex.unlock();
+        return curRpm;
+      }
+
     protected:
       vex::motor_group m_mg;
       PIDFParameters m_pidf;
@@ -87,13 +95,6 @@ namespace vpi {
       QAngularSpeed m_angularspeed_target = 0_rpm;
       PIDVelocityController *m_velocityPidController = NULL;
       vex::mutex m_mutex;
-
-      virtual QAngularSpeed GetCurrentAngularSpeed() {
-        m_mutex.lock();
-        QAngularSpeed curRpm = m_mg.velocity(units::rpm) * m_gearRatio * rpm;
-        m_mutex.unlock();
-        return curRpm;
-      }
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
         m_mg.spin(vex::directionType::fwd, targetVoltage, vex::voltageUnits::volt);
