@@ -44,6 +44,7 @@ extern brain Brain;
 #include "vpi/hal/gps/VexGpsPose2dGPS.h"
 #include "vpi/hal/motor/AngularSlewRateLimitedMotor.h"
 #include "vpi/hal/motor/LinearSlewRateLimitedMotor.h"
+#include "vpi/hal/motor/VelocityPidMotor.h"
 #include "vpi/hal/rotation/AbstractRotationSensor.h"
 #include "vpi/hal/rotation/EncoderRotationSensor.h"
 #include "vpi/hal/rotation/MotorRotationSensor.h"

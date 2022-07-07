@@ -155,7 +155,7 @@ void DifferentialDriveChassisPID::DriveDistance(QLength target,
 void DifferentialDriveChassisPID::ConsumeDistancePID(double v)
 {
   m_mutex.lock();
-  QSpeed s = *m_targetSpeed * v;
+  QSpeed s = (*m_targetSpeed) * v;
   // TODO - A SlewRateFilter could be applied here
   m_desiredWheelSpeeds->left = s;
   m_desiredWheelSpeeds->right = s;
