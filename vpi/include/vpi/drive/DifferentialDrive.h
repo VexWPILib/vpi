@@ -193,6 +193,16 @@ class DifferentialDrive : public RobotDriveBase {
 
   ChassisSpeeds GetChassisSpeed();
 
+  QSpeed LeftMotorSpeed() {
+    QAngularSpeed r = m_leftMotor->velocity(vex::velocityUnits::rpm) * rpm;
+    return m_kinematics.ConvertRotationalSpeedToLinearSpeed(r);
+  }
+
+  QSpeed RightMotorSpeed() {
+    QAngularSpeed r = m_rightMotor->velocity(vex::velocityUnits::rpm) * rpm;
+    return m_kinematics.ConvertRotationalSpeedToLinearSpeed(r);
+  }
+
  protected:
   vex::motor_group* m_leftMotor;
   vex::motor_group* m_rightMotor;
