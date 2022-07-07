@@ -211,12 +211,12 @@ class PIDController {
    * @param minimumInput The minimum value expected from the input.
    * @param maximumInput The maximum value expected from the input.
    */
-  void EnableContinuousInput(double minimumInput, double maximumInput);
+  virtual void EnableContinuousInput(double minimumInput, double maximumInput);
 
   /**
    * Disables continuous input.
    */
-  void DisableContinuousInput();
+  virtual void DisableContinuousInput();
 
   /**
    * Returns true if continuous input is enabled.

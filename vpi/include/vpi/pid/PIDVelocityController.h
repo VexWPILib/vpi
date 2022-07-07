@@ -41,6 +41,7 @@ class PIDVelocityController : public PIDController {
                 std::function<void(double)> useOutput,
                 QTime period = 20_ms) :
                 PIDController(p, measurementSource, useOutput, period) {
+    m_continuous = false;
   }
 
   ~PIDVelocityController() {
@@ -53,7 +54,8 @@ class PIDVelocityController : public PIDController {
   PIDVelocityController& operator=(PIDVelocityController&&) = default;
 
   bool AtSetpoint() override {return false;}
-
+  virtual void DisableContinuousInput() override {}
+  virtual void EnableContinuousInput(double minimumInput, double maximumInput) override {}
 };
 
 }  // namespace vpi
