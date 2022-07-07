@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "vpi/geometry/Pose2d.h"
+#include "vpi/geometry/Vector2d.h"
 #include "vpi/units/UnitUtils.h"
 
 namespace vpi {
@@ -21,6 +22,12 @@ namespace vpi {
   */
 class VexGpsPose2d {
  public:
+  enum PointRelativeOrientation {
+    STRAIGHT_AHEAD,
+    RIGHT,
+    LEFT
+  };
+
   /**
    * Returns the quality-based weighted average of 2 positions.
    */
@@ -112,6 +119,41 @@ class VexGpsPose2d {
     QAngle a = std::atan2((p.X() - X()).convert(inch), (p.Y() - Y()).convert(inch)) * radian;
     return UnitUtils::constrainTo180(a);
   }
+
+  /**
+  * Returns the points of intersetion of a line-segment defined by p0 and p1 and a circle
+  * whose center is this point with a radius of r.
+  *
+  * This is useful for finding look-ahead points for Pure Pursuit
+  *
+  * @param r - The radius of the circle
+  * @param p0 - The starting point of the line segment
+  * @param p1 - The ending point of the line segment
+  *
+  * @return If intersection found, a value from 0-1 for where along the segment between p0 and p1
+  *
+  * @see http://mathworld.wolfram.com/Circle-LineIntersection.html
+  */
+  std::vector<double> CircleLineIntersection(QLength r, VexGpsPose2d p0, VexGpsPose2d p1);
+
+  VexGpsPose2d CircleLineIntersectionPoint(QLength r, VexGpsPose2d p0, VexGpsPose2d p1, double t);
+
+  /**
+  * Returns whether the point is to the left or right.
+  *
+  * @see https://www.chiefdelphi.com/uploads/default/original/3X/b/e/be0e06de00e07db66f97686505c3f4dde2e332dc.pdf
+  */
+  PointRelativeOrientation OrientationOfPoseAndPoint(VexGpsPose2d p);
+
+  /**
+  * Returns Curvature to the point
+  *
+  * @param p - The Lookahead point
+  * @param r - The Distance to the lookahead point
+  *
+  * @see https://www.chiefdelphi.com/uploads/default/original/3X/b/e/be0e06de00e07db66f97686505c3f4dde2e332dc.pdf
+  */
+  QCurvature CurvatureToPoint(VexGpsPose2d p, QLength r);
 
  private:
   QLength m_x = 0_m;

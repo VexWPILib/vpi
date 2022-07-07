@@ -337,6 +337,14 @@ namespace vpi {
         m_gpsHandler = g;
       }
 
+      QSpeed LeftMotorSpeed() {
+        return m_drivetrain->LeftMotorSpeed();
+      }
+
+      QSpeed RightMotorSpeed() {
+        return m_drivetrain->RightMotorSpeed();
+      }
+
       virtual ChassisSpeeds GetChassisSpeed() {
         return m_drivetrain->GetChassisSpeed();
       }

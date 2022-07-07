@@ -123,4 +123,82 @@ namespace vpi {
     VexGpsPose2d z = VexGpsPose2d::MedianOfThree(c,d,e);
     return VexGpsPose2d::MedianOfThree(x,y,z);
   }
+
+  std::vector<double> VexGpsPose2d::CircleLineIntersection(QLength r, VexGpsPose2d p0, VexGpsPose2d p1) {
+    std::vector<double> retval;
+    // Based on https://www.chiefdelphi.com/uploads/default/original/3X/b/e/be0e06de00e07db66f97686505c3f4dde2e332dc.pdf
+    Vector2d d = Vector2d(p1.X().convert(meter) - p0.X().convert(meter), p1.Y().convert(meter) - p0.Y().convert(meter));
+    Vector2d f = Vector2d(p0.X().convert(meter) - X().convert(meter), p0.Y().convert(meter) - Y().convert(meter));
+
+    double a = d.Dot(d);
+    double b = 2 * f.Dot(d);
+    double c = f.Dot(f) - std::pow(r.convert(meter), 2);
+    double discriminant = std::pow(b, 2) - (4.0 * a * c);
+    if(discriminant > 0) {
+      // At least 1 solution exists
+      double sd = std::sqrt(discriminant);
+      double t1 = (-b - sd) / (2.0 * a);
+      double t2 = (-b + sd) / (2.0 * a);
+      if(t2 >= 0 && t2 <= 1.0) {
+        retval.emplace_back(t2);
+      }
+      if(t1 >= 0 && t1 <= 1.0) {
+        retval.emplace_back(t1);
+      }
+    }
+    return retval;
+  }
+
+  VexGpsPose2d VexGpsPose2d::CircleLineIntersectionPoint(QLength r, VexGpsPose2d p0, VexGpsPose2d p1, double t) {
+    VexGpsPose2d retval = p1;
+    // Based on https://www.chiefdelphi.com/uploads/default/original/3X/b/e/be0e06de00e07db66f97686505c3f4dde2e332dc.pdf
+    double dx = p1.X().convert(meter) - p0.X().convert(meter);
+    double dy = p1.Y().convert(meter) - p0.Y().convert(meter);
+    Vector2d d = Vector2d(dx, dy);
+    Vector2d f = Vector2d(p0.X().convert(meter) - X().convert(meter), p0.Y().convert(meter) - Y().convert(meter));
+
+    double a = d.Dot(d);
+    double b = 2 * f.Dot(d);
+    double c = f.Dot(f) - std::pow(r.convert(meter), 2);
+    double discriminant = std::pow(b, 2) - (4.0 * a * c);
+
+    if(discriminant > 0) {
+      // At least 1 solution exists
+      double newx = p0.X().convert(meter) + t * dx; 
+      double newy = p0.Y().convert(meter) + t * dy;
+      retval = VexGpsPose2d(newx * meter, newy * meter, 0 * radian);
+    }
+    return retval;
+  }
+
+  VexGpsPose2d::PointRelativeOrientation VexGpsPose2d::OrientationOfPoseAndPoint(VexGpsPose2d p) {
+    double p1x = X().convert(meter);
+    double p1y = Y().convert(meter);
+    double p2x = p1x + cos(Theta().convert(radian));
+    double p2y = p1y + sin(Theta().convert(radian));
+    double px = p.X().convert(meter);
+    double py = p.Y().convert(meter);
+
+    double side = (p2y - p1y) * (px - p2x) - (p2x - p1x) * (py - p2y);
+    if(fabs(side) < 1e-9) {
+      return VexGpsPose2d::PointRelativeOrientation::STRAIGHT_AHEAD;
+    } else if (side > 0) {
+      return VexGpsPose2d::PointRelativeOrientation::LEFT;
+    } else {
+      return VexGpsPose2d::PointRelativeOrientation::RIGHT;
+    }
+  }
+
+  QCurvature VexGpsPose2d::CurvatureToPoint(VexGpsPose2d p, QLength r) {
+    double dx = X().convert(meter) - p.X().convert(meter);
+    double c = fabs(2.0 * dx / std::pow(r.convert(meter),2));
+    if(OrientationOfPoseAndPoint(p) == VexGpsPose2d::PointRelativeOrientation::LEFT) {
+      c = -1.0 * c;
+    }
+    QCurvature retval(c);
+
+    return retval;
+  }
+
+
 }
