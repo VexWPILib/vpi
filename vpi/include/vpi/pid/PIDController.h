@@ -199,7 +199,7 @@ class PIDController {
    *
    * This will return false until at least one input value has been computed.
    */
-  virtual bool AtSetpoint() const;
+  virtual bool AtSetpoint();
 
   /**
    * Enables continuous input.
@@ -276,7 +276,7 @@ class PIDController {
   void Disable();
   bool CheckEnabled();
 
- private:
+ protected:
   // Factors for PIDF controls
   PIDFParameters m_P;
 
@@ -319,6 +319,7 @@ class PIDController {
 
   bool m_enabled = false;
 
+  private:
   vex::task *m_controlTask = NULL;
 
   void ControlLoop();
