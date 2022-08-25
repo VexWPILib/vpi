@@ -25,11 +25,11 @@ namespace vpi {
       QAngle GetValue() override {
         m_timestamp = m_motor.timestamp();
         
-        return m_motor.rotation(vex::rotationUnits::deg) * m_gearMultiplier * degree;
+        return m_motor.position(vex::rotationUnits::deg) * m_gearMultiplier * degree;
       }
 
       void Reset() override {
-        m_motor.resetRotation();
+        m_motor.resetPosition();
       }
 
       QAngularSpeed GetAngularSpeed() override {

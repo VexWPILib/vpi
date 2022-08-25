@@ -6,7 +6,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+#include "vpi/log/Logger.h"
 #include "vpi/pid/PIDController.h"
+#include "vpi/units/UnitUtils.h"
 
 #include <algorithm>
 #include <cmath>
@@ -28,12 +30,8 @@ PIDController::PIDController(PIDFParameters p,
       m_useOutput(std::move(useOutput)),
       m_period(period) {
   if (period <= 5 * millisecond) {
-    /* ReportError(
-        "Controller period must be a non-zero positive number, got {}!",
-        period.value());*/
     m_period = 20_ms;
-    /*ReportWarning(
-        "{}", "Controller period defaulted to 20ms.");*/
+    logger.log(Logger::LogLevel::WARN, "Controller period defaulted to 20ms");
   }
   static int instances = 0;
   instances++;
@@ -148,26 +146,31 @@ double PIDController::Calculate(double measurement) {
     m_Error = m_setpoint - measurement;
   }
 
-  m_ErrorDeltaTime = (m_Error - m_prevError) / m_period.convert(second);
+  m_ErrorDeltaTime = (m_Error - m_prevError) / m_period.convert(millisecond);
 
   if (m_P.Ki != 0) {
-    m_totalError =
-        VpiUtils::clip(m_totalError + m_Error * m_period.convert(second),
-                   m_minimumIntegral / m_P.Ki, m_maximumIntegral / m_P.Ki);
+    if(m_FirstCalc) {
+      m_totalError = 0;
+      m_FirstCalc = false;
+    } else {
+      m_totalError =
+          VpiUtils::clip(m_totalError + m_Error * m_period.convert(millisecond),
+                    m_minimumIntegral / m_P.Ki, m_maximumIntegral / m_P.Ki);
+    }
   }
 
   double retval = m_P.Kp * m_Error + m_P.Ki * m_totalError + m_P.Kd * m_ErrorDeltaTime + 
-        m_P.Kf * (prev_measurement - measurement);
+        m_P.Kf * m_setpoint;
   m_mutex.unlock();
   return retval;
 }
 
 void PIDController::Reset() {
-  Disable();
-
   m_mutex.lock();
+  m_Error = 0;
   m_prevError = 0;
   m_totalError = 0;
+  m_FirstCalc = true;
   m_mutex.unlock();
 }
 
@@ -196,6 +199,8 @@ void PIDController::SetEnabled(bool enabled) {
   if(enabled) {
     if(m_measurementSource != NULL && m_useOutput != NULL) {
       Enable();
+    } else {
+      Disable();
     }
   } else {
     Disable();
