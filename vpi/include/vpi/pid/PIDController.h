@@ -318,6 +318,7 @@ class PIDController {
   vex::mutex m_mutex;
 
   bool m_enabled = false;
+  bool m_FirstCalc = true;
 
   private:
   vex::task *m_controlTask = NULL;

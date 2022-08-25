@@ -7,6 +7,7 @@
 #include <thread>
 
 #include "vex.h"
+#include "vpi/log/Logger.h"
 #include "vpi/pid/PIDVelocityController.h"
 #include "vpi/units/QAngularSpeed.h"
 #include "vpi/units/UnitUtils.h"
@@ -34,14 +35,14 @@ namespace vpi {
           : m_mg({m}), m_pidf(pidf)
       {
         m_gearRatio = gearRatio;
-        m_velocityPidController = new PIDVelocityController(pidf, [this] {return this->GetCurrentAngularSpeed().convert(rpm);},
-                                              [this](double v) {this->ConsumeAngularSpeed(v);});
       }
 
       VelocityPidMotor(vex::motor_group mg, PIDFParameters pidf, double gearRatio = 1.0) 
           : m_mg(mg), m_pidf(pidf)
       {
         m_gearRatio = gearRatio;
+        m_velocityPidController = new PIDVelocityController(pidf, [this] {return this->GetCurrentAngularSpeed().convert(rpm);},
+                                              [this](double v) {this->ConsumeAngularSpeed(v);});
       }
 
       virtual ~VelocityPidMotor() {
@@ -81,11 +82,34 @@ namespace vpi {
         return false;
       }
 
+      void Reset() {
+        if(m_velocityPidController != NULL) {
+          m_velocityPidController->Reset();
+        }
+      }
+
       virtual QAngularSpeed GetCurrentAngularSpeed() {
         m_mutex.lock();
-        QAngularSpeed curRpm = m_mg.velocity(vex::velocityUnits::rpm) * m_gearRatio * rpm;
+        double motorRpm = m_mg.velocity(vex::velocityUnits::rpm);
+        QAngularSpeed curRpm = motorRpm * m_gearRatio * rpm;
         m_mutex.unlock();
         return curRpm;
+      }
+
+      /**
+       * Sets the minimum and maximum values for the integrator.
+       *
+       * When the cap is reached, the integrator value is added to the controller
+       * output rather than the integrator value times the integral gain.
+       *
+       * @param minimumIntegral The minimum value of the integrator.
+       * @param maximumIntegral The maximum value of the integrator.
+       */
+      void SetIntegratorRange(double minimumIntegral, double maximumIntegral)
+      {
+        if(m_velocityPidController != NULL) {
+          m_velocityPidController->SetIntegratorRange(minimumIntegral, maximumIntegral);
+        }
       }
 
     protected:
@@ -97,7 +121,13 @@ namespace vpi {
       vex::mutex m_mutex;
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
-        m_mg.spin(vex::directionType::fwd, targetVoltage, vex::voltageUnits::volt);
+        if(m_angularspeed_target == 0_rpm) {
+          m_mg.stop();
+        } else {
+          //double curVoltage = m_mg.voltage(vex::voltageUnits::mV);
+          //m_mg.spin(vex::directionType::fwd, curVoltage + targetVoltage, vex::voltageUnits::mV);
+          m_mg.spin(vex::directionType::fwd, targetVoltage, vex::voltageUnits::mV);
+        }
       }
   };
 } // vpi

@@ -13,6 +13,7 @@
 
 #include "vex.h"
 
+#include "vpi/log/Logger.h"
 #include "vpi/pid/PIDController.h"
 #include "vpi/utils.h"
 #include "vpi/units/QTime.h"

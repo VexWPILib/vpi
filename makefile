@@ -36,16 +36,16 @@ VPI_SRC_H += $(wildcard $(SRC_H))
 
 VPI_DST_H = $(addprefix $(BUILD)/, $(VPI_SRC_H:vpi/%=%))
 
-LVGL_LIB = lib/libv5lvgl.a
+#LVGL_LIB = lib/libv5lvgl.a
 
-LVGL_DST_LIB = $(addprefix $(BUILD)/, $(LVGL_LIB:lib/%=%))
+#LVGL_DST_LIB = $(addprefix $(BUILD)/, $(LVGL_LIB:lib/%=%))
 
-LVGL_H  = lib/include/v5lvgl.h lib/include/lv_conf.h
-LVGL_H += $(wildcard lib/include/lvgl/*.h)
-LVGL_H += $(wildcard lib/include/lvgl/src/*.h)
-LVGL_H += $(wildcard lib/include/lvgl/src/*/*.h)
+#LVGL_H  = lib/include/v5lvgl.h lib/include/lv_conf.h
+#LVGL_H += $(wildcard lib/include/lvgl/*.h)
+#LVGL_H += $(wildcard lib/include/lvgl/src/*.h)
+#LVGL_H += $(wildcard lib/include/lvgl/src/*/*.h)
 
-LVGL_DST_H = $(addprefix $(BUILD)/, $(LVGL_H:lib/%=%))
+#LVGL_DST_H = $(addprefix $(BUILD)/, $(LVGL_H:lib/%=%))
 
 $(BUILD)/%: vpi/include/%
 	$(Q)$(MKDIR)
@@ -63,7 +63,8 @@ $(BUILD)/lib/include/%: lib/include/%
 	$(Q)$(MKDIR)
 	$(Q) $(call copyfile,$^, $@)
 
-vpath %.h . vpi/ include/ vpi/include/ lib/ lib/include
+#vpath %.h . vpi/ include/ vpi/include/ lib/ lib/include
+vpath %.h . vpi/ include/ vpi/include/
 
 # override default library name
 PROJECTLIB = libvpi
