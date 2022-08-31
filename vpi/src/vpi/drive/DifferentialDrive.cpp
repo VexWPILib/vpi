@@ -76,6 +76,15 @@ void DifferentialDrive::ArcadeDrive(double xSpeed, double zRotation,
   SetMotorSpeedPercent(ws.left, ws.right);
 }
 
+void DifferentialDrive::CurvatureDrive(double xSpeed, double zRotation) {
+  xSpeed = VpiUtils::ApplyDeadband(xSpeed, m_deadband);
+  zRotation = VpiUtils::ApplyDeadband(zRotation, m_deadband);
+
+  WheelSpeeds ws = CurvatureDriveIK(xSpeed, zRotation);
+
+  SetMotorSpeedPercent(ws.left, ws.right);
+}
+
 void DifferentialDrive::TankDrive(double leftSpeed, double rightSpeed,
                                   bool squareInputs) {
 
@@ -131,6 +140,36 @@ DifferentialDrive::WheelSpeeds DifferentialDrive::ArcadeDriveIK(
     leftSpeed /= maxMagnitude;
     rightSpeed /= maxMagnitude;
   }
+  WheelSpeeds retval;
+  retval.left = leftSpeed;
+  retval.right = rightSpeed;
+  return retval;
+}
+
+DifferentialDrive::WheelSpeeds DifferentialDrive::CurvatureDriveIK(
+    double xSpeed, double zRotation) {
+  xSpeed = VpiUtils::clip(xSpeed, -1.0, 1.0);
+  zRotation = VpiUtils::clip(zRotation, -1.0, 1.0);
+
+  double leftSpeed = 0.0;
+  double rightSpeed = 0.0;
+
+  // Turn in place if forward speed is zero
+  if (xSpeed == 0.0) {
+    leftSpeed = xSpeed + zRotation;
+    rightSpeed = xSpeed - zRotation;
+  } else {
+    leftSpeed = xSpeed + std::abs(xSpeed) * zRotation;
+    rightSpeed = xSpeed - std::abs(xSpeed) * zRotation;
+  }
+
+  // Normalize wheel speeds
+  double maxMagnitude = std::max(std::abs(leftSpeed), std::abs(rightSpeed));
+  if (maxMagnitude > 1.0) {
+    leftSpeed /= maxMagnitude;
+    rightSpeed /= maxMagnitude;
+  }
+
   WheelSpeeds retval;
   retval.left = leftSpeed;
   retval.right = rightSpeed;
