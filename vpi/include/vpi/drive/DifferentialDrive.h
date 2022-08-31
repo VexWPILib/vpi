@@ -127,6 +127,35 @@ class DifferentialDrive : public RobotDriveBase {
                                    bool squareInputs = true);
 
   /**
+   * Curvature drive method for differential drive platform.
+   *
+   * The rotation argument controls the curvature of the robot's path rather
+   * than its rate of heading change. This makes the robot more controllable at
+   * high speeds.  Allows turn-in-place if forward speed is zero.
+   *
+   * @param xSpeed           The robot's speed along the X axis [-1.0..1.0].
+   *                         Forward is positive.
+   * @param zRotation        The normalized curvature [-1.0..1.0]. Clockwise is
+   *                         positive.
+   */
+  void CurvatureDrive(double xSpeed, double zRotation);
+
+  /**
+   * Curvature drive inverse kinematics for differential drive platform.
+   *
+   * The rotation argument controls the curvature of the robot's path rather
+   * than its rate of heading change. This makes the robot more controllable at
+   * high speeds.  Allows turn-in-place if forward speed is zero.
+   *
+   * @param xSpeed           The robot's speed along the X axis [-1.0..1.0].
+   *                         Forward is positive.
+   * @param zRotation        The normalized curvature [-1.0..1.0]. Clockwise is
+   *                         positive.
+   * @return Wheel speeds [-1.0..1.0].
+   */
+  static WheelSpeeds CurvatureDriveIK(double xSpeed, double zRotation);
+
+  /**
    * Tank drive method for differential drive platform.
    *
    * @param leftSpeed     The robot left side's speed along the X axis
