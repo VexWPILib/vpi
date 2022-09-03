@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "vpi/follower/RamseteController.h"
 #include "vpi/chassis/DifferentialDriveChassis.h"
+#include "vpi/controller/RamseteController.h"
 #include "vpi/kinematics/ChassisSpeeds.h"
 #include "vpi/kinematics/DifferentialDriveWheelSpeeds.h"
 #include "vpi/log/Logger.h"
