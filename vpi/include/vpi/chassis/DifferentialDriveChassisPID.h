@@ -10,7 +10,7 @@
 
 #include "vex.h"
 #include "vpi/chassis/DifferentialDriveChassis.h"
-#include "vpi/pid/PIDController.h"
+#include "vpi/controller/PIDController.h"
 
 namespace vpi {
 /**

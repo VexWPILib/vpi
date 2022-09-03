@@ -8,7 +8,7 @@
 
 #include "vex.h"
 #include "vpi/log/Logger.h"
-#include "vpi/pid/PIDVelocityController.h"
+#include "vpi/controller/PIDVelocityController.h"
 #include "vpi/units/QAngularSpeed.h"
 #include "vpi/units/UnitUtils.h"
 

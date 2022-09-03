@@ -7,7 +7,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 #include "vpi/log/Logger.h"
-#include "vpi/pid/PIDController.h"
+#include "vpi/controller/PIDController.h"
 #include "vpi/units/UnitUtils.h"
 
 #include <algorithm>
@@ -134,7 +134,7 @@ double PIDController::GetErrorDeltaTime() const {
 
 double PIDController::Calculate(double measurement) {
   m_mutex.lock();
-  double prev_measurement = m_measurement;
+  //double prev_measurement = m_measurement;
   m_measurement = measurement;
   m_prevError = m_Error;
 
