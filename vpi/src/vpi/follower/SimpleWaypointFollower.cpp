@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the VexWPIApi BSD license file in the root directory of this project.
 
-#include "vpi/controller/SimpleWaypointFollower.h"
+#include "vpi/follower/SimpleWaypointFollower.h"
 
 namespace vpi {
 
