@@ -35,6 +35,8 @@ namespace vpi {
           : m_mg({m}), m_pidf(pidf)
       {
         m_gearRatio = gearRatio;
+        m_velocityPidController = new PIDVelocityController(pidf, [this] {return this->GetCurrentAngularSpeed().convert(rpm);},
+                                              [this](double v) {this->ConsumeAngularSpeed(v);});
       }
 
       VelocityPidMotor(vex::motor_group mg, PIDFParameters pidf, double gearRatio = 1.0) 
@@ -96,6 +98,12 @@ namespace vpi {
         return curRpm;
       }
 
+      void SetDebug(bool b) {
+        m_mutex.lock();
+        m_debug = b;
+        m_mutex.unlock();
+      }
+
       /**
        * Sets the minimum and maximum values for the integrator.
        *
@@ -119,11 +127,30 @@ namespace vpi {
       QAngularSpeed m_angularspeed_target = 0_rpm;
       PIDVelocityController *m_velocityPidController = NULL;
       vex::mutex m_mutex;
+      bool m_debug = false;
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
         if(m_angularspeed_target == 0_rpm) {
           m_mg.stop();
         } else {
+          if(m_debug) {
+            int curTime = (int)UnitUtils::now().convert(millisecond);
+            double mRpm = m_mg.velocity(vex::velocityUnits::rpm);
+            double mVolts = m_mg.voltage(vex::voltageUnits::mV);
+            double mCurrent = m_mg.current(vex::currentUnits::amp);
+            double mPower = m_mg.power(vex::powerUnits::watt);
+            double mTemp = m_mg.temperature(vex::temperatureUnits::fahrenheit);
+            double mTorque = m_mg.torque(vex::torqueUnits::Nm);
+            printf("%d,%d,%d,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f\n",curTime, 
+                                                                (int)(mRpm * m_gearRatio),
+                                                                (int)m_angularspeed_target.convert(rpm),
+                                                                targetVoltage,
+                                                                mVolts,
+                                                                mCurrent,
+                                                                mPower,
+                                                                mTemp,
+                                                                mTorque);
+          }
           m_mg.spin(vex::directionType::fwd, targetVoltage, vex::voltageUnits::mV);
         }
       }

@@ -20,8 +20,8 @@ BangBangController::BangBangController(std::function<double()> measurementSource
       m_useOutput(std::move(useOutput)),
       m_period(period),
       m_tolerance(tolerance) {
-  if (period <= 5 * millisecond) {
-    m_period = 20_ms;
+  if (period < 5 * millisecond) {
+    m_period = 5_ms;
     logger.log(Logger::LogLevel::WARN, "Controller period defaulted to 20ms");
   }
   static int instances = 0;
@@ -110,10 +110,12 @@ bool BangBangController::CheckEnabled()
 
 void BangBangController::ControlLoop()
 {
-  while(CheckEnabled()) {
-    double m = m_measurementSource();
-    m = Calculate(m);
-    m_useOutput(m);
+  while(1) {
+    if(CheckEnabled()) {
+      double m = m_measurementSource();
+      m = Calculate(m);
+      m_useOutput(m);
+    }
     this_thread::sleep_for(m_period.convert(millisecond));
   }
 }

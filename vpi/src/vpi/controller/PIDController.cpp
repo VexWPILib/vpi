@@ -29,8 +29,8 @@ PIDController::PIDController(PIDFParameters p,
       m_measurementSource(std::move(measurementSource)),
       m_useOutput(std::move(useOutput)),
       m_period(period) {
-  if (period <= 5 * millisecond) {
-    m_period = 20_ms;
+  if (period < 5 * millisecond) {
+    m_period = 5_ms;
     logger.log(Logger::LogLevel::WARN, "Controller period defaulted to 20ms");
   }
   static int instances = 0;

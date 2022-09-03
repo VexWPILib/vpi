@@ -30,18 +30,36 @@ namespace vpi {
    */
   class VelocityBangBangMotor {
     public:
-      VelocityBangBangMotor(vex::motor m, vex::gearSetting gs, double gearRatio = 1.0) 
+      VelocityBangBangMotor(vex::motor m, vex::gearSetting gs, double gearRatio = 1.0, QTime period = 10_ms) 
           : m_mg({m}), m_gs(gs)
       {
         m_gearRatio = gearRatio;
+        double tol = 200;
+        if(m_gs == vex::gearSetting::ratio36_1) {
+          tol = 100;
+        } else if(m_gs == vex::gearSetting::ratio6_1) {
+          tol = 600;
+        }
+        tol = tol * gearRatio * .10;
+        m_bangBangController = new BangBangController([this] {return this->GetCurrentAngularSpeed().convert(rpm);},
+                                              [this](double v) {this->ConsumeAngularSpeed(v);},
+                                              period, tol);
       }
 
-      VelocityBangBangMotor(vex::motor_group mg, vex::gearSetting gs, double gearRatio = 1.0) 
+      VelocityBangBangMotor(vex::motor_group mg, vex::gearSetting gs, double gearRatio = 1.0, QTime period = 10_ms) 
           : m_mg(mg), m_gs(gs)
       {
         m_gearRatio = gearRatio;
+        double tol = 200;
+        if(m_gs == vex::gearSetting::ratio36_1) {
+          tol = 100;
+        } else if(m_gs == vex::gearSetting::ratio6_1) {
+          tol = 600;
+        }
+        tol = tol * gearRatio * .10;
         m_bangBangController = new BangBangController([this] {return this->GetCurrentAngularSpeed().convert(rpm);},
-                                              [this](double v) {this->ConsumeAngularSpeed(v);});
+                                              [this](double v) {this->ConsumeAngularSpeed(v);},
+                                              period, tol);
       }
 
       virtual ~VelocityBangBangMotor() {
@@ -81,12 +99,6 @@ namespace vpi {
         return false;
       }
 
-      void Reset() {
-        if(m_bangBangController != NULL) {
-          m_bangBangController->Reset();
-        }
-      }
-
       virtual QAngularSpeed GetCurrentAngularSpeed() {
         m_mutex.lock();
         double motorRpm = m_mg.velocity(vex::velocityUnits::rpm);
@@ -95,6 +107,12 @@ namespace vpi {
         return curRpm;
       }
 
+      void SetDebug(bool b) {
+        m_mutex.lock();
+        m_debug = b;
+        m_mutex.unlock();
+      }
+      
     protected:
       vex::motor_group m_mg;
       vex::gearSetting m_gs;
@@ -102,9 +120,9 @@ namespace vpi {
       QAngularSpeed m_angularspeed_target = 0_rpm;
       BangBangController *m_bangBangController = NULL;
       vex::mutex m_mutex;
+      bool m_debug = false;
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
-        vex::motor m = vex::motor()
         if(m_angularspeed_target == 0_rpm) {
           m_mg.stop();
         } else {
@@ -115,8 +133,30 @@ namespace vpi {
             maxRpm = 600;
           }
           maxRpm = maxRpm * m_gearRatio;
-          double rpmVoltage = (m_angularspeed_target.convert(rpm) / maxRpm) * 12000; // 12000 mV limit for V5 motors
-          double voltageToApply = targetVoltage * 12000 + rpmVoltage;  // targetVoltage will be either 0 or 1 from the BangBangController. 12000 mV limit
+          double rpmVoltage = .9 * (m_angularspeed_target.convert(rpm) / maxRpm) * 12000; // 12000 mV limit for V5 motors. Take 90%
+          double voltageToApply = rpmVoltage;
+          if(targetVoltage > 0.0) {
+            voltageToApply = targetVoltage * 12000;  // targetVoltage will be either 0 or 1 from the BangBangController. 12000 mV limit
+          }
+          if(m_debug) {
+            int curTime = (int)UnitUtils::now().convert(millisecond);
+            double mRpm = m_mg.velocity(vex::velocityUnits::rpm);
+            double mVolts = m_mg.voltage(vex::voltageUnits::mV);
+            double mCurrent = m_mg.current(vex::currentUnits::amp);
+            double mPower = m_mg.power(vex::powerUnits::watt);
+            double mTemp = m_mg.temperature(vex::temperatureUnits::fahrenheit);
+            double mTorque = m_mg.torque(vex::torqueUnits::Nm);
+            printf("%d,%d,%d,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f,%4.2f\n",curTime, 
+                                                                (int)(mRpm * m_gearRatio),
+                                                                (int)m_angularspeed_target.convert(rpm),
+                                                                targetVoltage,
+                                                                voltageToApply,
+                                                                mVolts,
+                                                                mCurrent,
+                                                                mPower,
+                                                                mTemp,
+                                                                mTorque);
+          }
           m_mg.spin(vex::directionType::fwd, voltageToApply, vex::voltageUnits::mV);
         }
       }
