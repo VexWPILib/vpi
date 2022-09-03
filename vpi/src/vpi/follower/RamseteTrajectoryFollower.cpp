@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the VexWPIApi BSD license file in the root directory of this project.
 
-#include "vpi/controller/RamseteTrajectoryFollower.h"
+#include "vpi/follower/RamseteTrajectoryFollower.h"
 
 using namespace vpi;
 

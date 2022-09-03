@@ -8,7 +8,7 @@
 
 #include "vex.h"
 #include "vpi/log/Logger.h"
-#include "vpi/pid/PIDVelocityController.h"
+#include "vpi/controller/PIDVelocityController.h"
 #include "vpi/units/QAngularSpeed.h"
 #include "vpi/units/UnitUtils.h"
 
@@ -124,8 +124,6 @@ namespace vpi {
         if(m_angularspeed_target == 0_rpm) {
           m_mg.stop();
         } else {
-          //double curVoltage = m_mg.voltage(vex::voltageUnits::mV);
-          //m_mg.spin(vex::directionType::fwd, curVoltage + targetVoltage, vex::voltageUnits::mV);
           m_mg.spin(vex::directionType::fwd, targetVoltage, vex::voltageUnits::mV);
         }
       }
