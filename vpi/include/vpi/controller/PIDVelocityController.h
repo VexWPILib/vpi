@@ -35,12 +35,12 @@ class PIDVelocityController : public PIDController {
    * @param measurementSource The function that returns the current state
    * @param useOutput The function that applies the result
    * @param period The period between controller updates in seconds. The
-   *               default is 20 milliseconds. Must be non-zero and positive.
+   *               default is 10 milliseconds. Must be non-zero and positive.
    */
   PIDVelocityController(PIDFParameters p,
                 std::function<double()> measurementSource,
                 std::function<void(double)> useOutput,
-                QTime period = 20_ms) :
+                QTime period = 10_ms) :
                 PIDController(p, measurementSource, useOutput, period) {
     m_continuous = false;
   }
