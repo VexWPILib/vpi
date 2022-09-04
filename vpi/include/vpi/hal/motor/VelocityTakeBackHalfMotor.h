@@ -110,7 +110,7 @@ namespace vpi {
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
         if(m_angularspeed_target == 0_rpm) {
-          m_mg.stop();
+          m_mg.stop(vex::brakeType::coast);
         } else {
           if(m_debug) {
             int curTime = (int)UnitUtils::now().convert(millisecond);
