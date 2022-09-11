@@ -30,36 +30,31 @@ namespace vpi {
    */
   class VelocityBangBangMotor {
     public:
-      VelocityBangBangMotor(vex::motor m, vex::gearSetting gs, double gearRatio = 1.0, QTime period = 10_ms) 
+      VelocityBangBangMotor(vex::motor m, vex::gearSetting gs, double pctBangBang, double tolRpm, double gearRatio = 1.0, QTime period = 10_ms) 
           : m_mg({m}), m_gs(gs)
       {
         m_gearRatio = gearRatio;
-        double tol = 200;
-        if(m_gs == vex::gearSetting::ratio36_1) {
-          tol = 100;
-        } else if(m_gs == vex::gearSetting::ratio6_1) {
-          tol = 600;
+        m_pctBB = pctBangBang;
+        if(m_pctBB < 0.05 || m_pctBB > 1.0) {
+          m_pctBB = .1;
         }
-        tol = tol * gearRatio * .10;
+
         m_bangBangController = new BangBangController([this] {return this->GetCurrentAngularSpeed().convert(rpm);},
                                               [this](double v) {this->ConsumeAngularSpeed(v);},
-                                              period, tol);
+                                              period, tolRpm);
       }
 
-      VelocityBangBangMotor(vex::motor_group mg, vex::gearSetting gs, double gearRatio = 1.0, QTime period = 10_ms) 
+      VelocityBangBangMotor(vex::motor_group mg, vex::gearSetting gs, double pctBangBang, double tolRpm, double gearRatio = 1.0, QTime period = 10_ms) 
           : m_mg(mg), m_gs(gs)
       {
         m_gearRatio = gearRatio;
-        double tol = 200;
-        if(m_gs == vex::gearSetting::ratio36_1) {
-          tol = 100;
-        } else if(m_gs == vex::gearSetting::ratio6_1) {
-          tol = 600;
+        m_pctBB = pctBangBang;
+        if(m_pctBB < 0.05 || m_pctBB > 1.0) {
+          m_pctBB = .1;
         }
-        tol = tol * gearRatio * .10;
         m_bangBangController = new BangBangController([this] {return this->GetCurrentAngularSpeed().convert(rpm);},
                                               [this](double v) {this->ConsumeAngularSpeed(v);},
-                                              period, tol);
+                                              period, tolRpm);
       }
 
       virtual ~VelocityBangBangMotor() {
@@ -121,6 +116,7 @@ namespace vpi {
       BangBangController *m_bangBangController = NULL;
       vex::mutex m_mutex;
       bool m_debug = false;
+      double m_pctBB = .1;
 
       virtual void ConsumeAngularSpeed(double targetVoltage) {
         if(m_angularspeed_target == 0_rpm) {
@@ -133,11 +129,9 @@ namespace vpi {
             maxRpm = 600;
           }
           maxRpm = maxRpm * m_gearRatio;
-          double rpmVoltage = .9 * (m_angularspeed_target.convert(rpm) / maxRpm) * 12000; // 12000 mV limit for V5 motors. Take 90%
-          double voltageToApply = rpmVoltage;
-          if(targetVoltage > 0.0) {
-            voltageToApply = targetVoltage * 12000;  // targetVoltage will be either 0 or 1 from the BangBangController. 12000 mV limit
-          }
+          double rpmVoltage = (1.05 - m_pctBB) * (m_angularspeed_target.convert(rpm) / maxRpm) * 12000; // 12000 mV limit for V5 motors. Take 90%
+          double voltageToApply = rpmVoltage + m_pctBB * targetVoltage * 12000;
+
           if(m_debug) {
             int curTime = (int)UnitUtils::now().convert(millisecond);
             double mRpm = m_mg.velocity(vex::velocityUnits::rpm);
