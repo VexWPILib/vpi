@@ -156,8 +156,8 @@ DifferentialDrive::WheelSpeeds DifferentialDrive::CurvatureDriveIK(
 
   // Turn in place if forward speed is zero
   if (xSpeed == 0.0) {
-    leftSpeed = xSpeed + zRotation;
-    rightSpeed = xSpeed - zRotation;
+    leftSpeed = zRotation;
+    rightSpeed = -1.0 * zRotation;
   } else {
     leftSpeed = xSpeed + std::abs(xSpeed) * zRotation;
     rightSpeed = xSpeed - std::abs(xSpeed) * zRotation;
