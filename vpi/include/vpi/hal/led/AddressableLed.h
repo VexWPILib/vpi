@@ -4,7 +4,8 @@
 
 /*
  * This Source Code Form is subject to the terms of the MIT License which
- * is included in the root directory of this project.
+ * is included in the root directory of this project and copyrighted to
+ * James Pearman
  */
 
 #pragma once
@@ -44,7 +45,7 @@ class AddressableLed {
         for(int i=0;i<maxled;i++) {
           ledbuffer[i] = col;
         }
-        set( ledbuffer, 0, maxled, 0);
+        Set( ledbuffer, 0, maxled, 0);
       }
 
       void Set( uint32_t *pData, uint32_t nOffset, uint32_t nLength, uint32_t options ) {
@@ -83,7 +84,7 @@ class AddressableLed {
       }
 
       void Flush() {
-        set( ledbuffer, 0, maxled, 0);
+        Set( ledbuffer, 0, maxled, 0);
       }
 
       int32_t Max() {
