@@ -4,7 +4,6 @@
 
 #include "vpi/log/Logger.h"
 
-
 namespace vpi {
   Logger logger(Logger::LogLevel::WARN);
 }
