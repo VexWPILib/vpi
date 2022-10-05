@@ -7,6 +7,7 @@
 #include <vector>
 // Based on https://www.vexforum.com/t/graphing-on-the-v5-screen/78221
 
+namespace vpi {
 class Graph {
   
   private:
@@ -152,3 +153,4 @@ class Graph {
 
 };
 
+};

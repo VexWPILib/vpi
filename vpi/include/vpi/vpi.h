@@ -84,6 +84,7 @@ extern brain Brain;
 #include "vpi/trajectory/TrajectoryParameterizer.h"
 #include "vpi/trajectory/TrapezoidProfile.h"
 #include "vpi/ui/Graph.h"
+#include "vpi/ui/OdometryUI.h"
 #include "vpi/units/QAcceleration.h"
 #include "vpi/units/QAngle.h"
 #include "vpi/units/QAngularAcceleration.h"
