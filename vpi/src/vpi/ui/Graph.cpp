@@ -4,6 +4,8 @@
 
 #include "vpi/ui/Graph.h"
 
+using namespace vpi;
+
 // Based on https://www.vexforum.com/t/graphing-on-the-v5-screen/78221
 
 // Draw graph X and Y axis
