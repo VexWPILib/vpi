@@ -54,6 +54,7 @@ extern brain Brain;
 #include "vpi/hal/motor/VelocityBangBangMotor.h"
 #include "vpi/hal/motor/VelocityPidMotor.h"
 #include "vpi/hal/motor/VelocityTakeBackHalfMotor.h"
+#include "vpi/hal/pneumatic/PneumaticGroup.h"
 #include "vpi/hal/rotation/AbstractRotationSensor.h"
 #include "vpi/hal/rotation/EncoderRotationSensor.h"
 #include "vpi/hal/rotation/MotorRotationSensor.h"
