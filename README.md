@@ -44,7 +44,7 @@ The example programs already have the changes in place, but this documents what 
 
 ### Makefile changes - details
 
-To use the library in another project, build this project and then copy `libvpi.a` and `libv5lvgl.a` files  into a suitable place such as a "lib" directory.  Then copy the files in the `build/include` directory into your own project's `include` directory.
+To use the library in another project, build this project and then copy `libvpi.a` into a suitable place such as a "lib" directory.  Then copy the files in the `vpi/include` directory into your own project's `include` directory.
 
 Open the makefile and add directories under the include directory right after the existing line starting with SRC_H:
 
@@ -57,10 +57,10 @@ Include the header files in the new project's include directory and use the libr
 
 Now the project will still not build as we have to tell the linker to link the library
 
-Open mkenv.mk and edit to add the new library (add `-lv5lvgl` and `-lvpi`) so that it looks similar to:
+Open mkenv.mk and edit to add the new library (add `-lvpi`) so that it looks similar to:
 
     # libraries
-    LIBS =  --start-group -lv5rt -lstdc++ -lc -lm -lgcc -lv5lvgl -lvpi --end-group
+    LIBS =  --start-group -lv5rt -lstdc++ -lc -lm -lgcc -lvpi --end-group
 
 And tell the linker where it is by adding the path here (add -L"lib" assuming you have placed these libraries a directory you create called "lib" in your project)
 
