@@ -32,6 +32,7 @@ extern brain Brain;
 #include "vpi/drive/MecanumDrive.h"
 #include "vpi/drive/RobotDriveBase.h"
 #include "vpi/filter/AngularSlewRateLimiter.h"
+#include "vpi/filter/EMAFilter.h"
 #include "vpi/filter/LinearSlewRateLimiter.h"
 #include "vpi/follower/DifferentialDrivePurePursuitFollower.h"
 #include "vpi/follower/SimpleWaypointFollower.h"
